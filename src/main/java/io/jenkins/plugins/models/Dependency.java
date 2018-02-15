@@ -18,14 +18,22 @@ public class Dependency {
   @JsonProperty("version")
   private String version;
 
+  @JsonProperty("implied")
+  private boolean implied;
+
   public Dependency() {
   }
 
   public Dependency(String name, String title, boolean optional, String version) {
+    this(name, title, optional, version, false);
+  }
+
+  public Dependency(String name, String title, boolean optional, String version, boolean implied) {
     this.name = name;
     this.title = title;
     this.optional = optional;
     this.version = version;
+    this.implied = implied;
   }
 
   public String getName() {
@@ -58,5 +66,13 @@ public class Dependency {
 
   public void setVersion(String version) {
     this.version = version;
+  }
+
+  public boolean isImplied() {
+    return implied;
+  }
+
+  public void setImplied(boolean implied) {
+    this.implied = implied;
   }
 }

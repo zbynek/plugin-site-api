@@ -20,7 +20,7 @@ public class DependenciesPluginDataParser implements PluginDataParser {
 
   @Override
   public void parse(JSONObject pluginJson, Plugin plugin) {
-    plugin.setDependencies(StreamSupport.stream(pluginJson.optJSONArray("dependencies").spliterator(), false)
+    plugin.addDependencies(StreamSupport.stream(pluginJson.optJSONArray("dependencies").spliterator(), false)
       .map(obj -> (JSONObject)obj)
       .map(dependencyJson -> {
         final String name = dependencyJson.getString("name");

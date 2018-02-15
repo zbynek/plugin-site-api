@@ -46,6 +46,7 @@ public class GeneratePluginData {
       new LabelsPluginDataParser(),
       new CategoriesPluginDataParser(),
       new DependenciesPluginDataParser(updateCenterJson),
+      new ImpliedDependenciesCoreResourceParser(updateCenterJson),
       new FirstReleasePluginDataParser(),
       new MaintainersPluginDataParser(),
       new ScmPluginDataParser(),
