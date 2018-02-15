@@ -26,9 +26,13 @@ WORKDIR /plugins
 # Make sure all our node dependencies are present and accounted for
 RUN yarn
 
+RUN mkdir -p /home/jetty/.yarn
+RUN chown -R jetty /home/jetty /plugins
 
 WORKDIR $JETTY_BASE
 
 # Expose the npm server's port while we're at it
 EXPOSE 5000
+USER jetty
+
 CMD /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
