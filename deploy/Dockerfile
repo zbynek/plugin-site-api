@@ -4,14 +4,14 @@ USER root
 
 # Adds yarn. Worked before but was in testing. Now in community.Add main to ensure
 # it keeps working
-RUN echo -e 'http://dl-cdn.alpinelinux.org/alpine/edge/main' >> /etc/apk/repositories
-RUN echo -e 'http://dl-cdn.alpinelinux.org/alpine/edge/community' >> /etc/apk/repositories
-RUN echo -e 'http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories
+#RUN echo -e 'http://dl-cdn.alpinelinux.org/alpine/edge/main' >> /etc/apk/repositories
+#RUN echo -e 'http://dl-cdn.alpinelinux.org/alpine/edge/community' >> /etc/apk/repositories
+#RUN echo -e 'http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories
 
 
 # Add our system dependencies for running jetty and node services inside the
 # container
-RUN apk update && apk add supervisor nodejs yarn
+RUN apk add -U supervisor nodejs yarn
 
 # Bring our Java backend app over for Jetty
 COPY *.war /var/lib/jetty/webapps/ROOT.war
