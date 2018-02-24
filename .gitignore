@@ -2,3 +2,4 @@
 target/
 *.iml
 *.sw*
+plugins.json.gzip
