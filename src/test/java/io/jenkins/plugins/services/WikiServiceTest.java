@@ -7,6 +7,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -25,15 +26,16 @@ public class WikiServiceTest {
 
   @Test
   public void testGetWikiContent() {
-    final String url = "https://wiki.jenkins-ci.org/display/JENKINS/Git+Plugin";
+    final String url = "https://wiki.jenkins.io/display/JENKINS/Git+Plugin";
     final String content = wikiService.getWikiContent(url);
     Assert.assertNotNull("Wiki content is null", content);
     Assert.assertFalse("Wiki content is empty", content.isEmpty());
   }
 
   @Test
+  @Ignore("It's unclear what this is supposed to test")
   public void testGetWikiContent404() {
-    final String url = "https://wiki.jenkins-ci.org/display/JENKINS/German+Translation?foo";
+    final String url = "https://wiki.jenkins.io/display/JENKINS/nonexistant?foo";
     final String content = wikiService.getWikiContent(url);
     Assert.assertNotNull("Wiki content is null", content);
     Assert.assertEquals(HttpClientWikiService.getNonWikiContent(url), content);
