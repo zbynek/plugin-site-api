@@ -12,6 +12,8 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -30,7 +32,7 @@ public class Plugin {
   private Set<String> categories;
 
   @JsonProperty("dependencies")
-  private List<Dependency> dependencies;
+  private List<Dependency> dependencies = new ArrayList<>();
 
   @JsonProperty("maintainers")
   private List<Maintainer> maintainers;
@@ -152,6 +154,10 @@ public class Plugin {
 
   public void setDependencies(List<Dependency> dependencies) {
     this.dependencies = dependencies;
+  }
+
+  public void addDependencies(Collection<Dependency> dependencies) {
+    this.dependencies.addAll(dependencies);
   }
 
   public List<Maintainer> getMaintainers() {

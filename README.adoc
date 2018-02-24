@@ -3,6 +3,19 @@
 This is the backend API for Jenkins Plugin Site frontend. It provides a REST API
 to allow searching for plugins and retrieving specific plugin information.
 
+== Hacking
+
+In order to run the plugin-site-api tests, a service needs to be online which
+can serve up a `DATA_FILE_URL`. Assuming `docker-compos` is installed on the
+system, the following commands will run the tests properly:
+
+* in another terminal: `make run`
+* `make check`
+
+Inspect the `Makefile` for more targets, such as `all` which will run tests and
+build a working container.
+
+
 == Architecture
 
 The REST API calls are powered by Jersey 2.x running inside of Tomcat 8. Plugins
