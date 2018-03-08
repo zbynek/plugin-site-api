@@ -116,7 +116,7 @@ public class HttpClientWikiService implements WikiService {
     }
     final Element wikiContent = elements.first();
     // Remove the entire span at the top with the "Plugin Information" inside
-    final Element topPluginInformation = wikiContent.select("table.conf-macro.output-inline th :contains(Plugin Information)").first();
+    final Element topPluginInformation = wikiContent.select(".conf-macro.output-inline th :contains(Plugin Information)").first();
     if (topPluginInformation != null) {
       Element element = topPluginInformation;
       while (!element.tagName().equals("table")) {
