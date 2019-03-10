@@ -1,13 +1,15 @@
 #!/usr/bin/env groovy
 
-properties([
-    buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '5')),
-    pipelineTriggers([[$class:"SCMTrigger", scmpoll_spec:"H/10 * * * *"]]),
-])
-
 def isPullRequest = !!(env.CHANGE_ID)
 def pushToDocker = infra.isTrusted()
 String shortCommit = ''
+
+if (!isPullRequest) {
+    properties([
+        buildDiscarder(logRotator(numToKeepStr: '5')),
+        pipelineTriggers([[$class:"SCMTrigger", scmpoll_spec:"H/10 * * * *"]]),
+    ])
+}
 
 node('docker') {
     /* Make sure we're always starting with a fresh workspace */
