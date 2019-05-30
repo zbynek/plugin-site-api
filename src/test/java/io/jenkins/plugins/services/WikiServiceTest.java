@@ -1,7 +1,18 @@
 package io.jenkins.plugins.services;
 
+import io.jenkins.plugins.models.GeneratedPluginData;
+import io.jenkins.plugins.models.Plugin;
+import io.jenkins.plugins.services.impl.ConfluenceApiExtractor;
+import io.jenkins.plugins.services.impl.ConfluenceDirectExtractor;
+import io.jenkins.plugins.services.impl.DefaultConfigurationService;
+import io.jenkins.plugins.services.impl.GithubExtractor;
 import io.jenkins.plugins.services.impl.HttpClientWikiService;
+import io.jenkins.plugins.services.impl.WikiExtractor;
+
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.CoreMatchers;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -13,6 +24,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 public class WikiServiceTest {
 
@@ -25,11 +37,18 @@ public class WikiServiceTest {
   }
 
   @Test
-  public void testGetWikiContent() {
+  public void testGetWikiContentConfluence() {
     final String url = "https://wiki.jenkins.io/display/JENKINS/Git+Plugin";
     final String content = wikiService.getWikiContent(url);
-    Assert.assertNotNull("Wiki content is null", content);
-    Assert.assertFalse("Wiki content is empty", content.isEmpty());
+    assertValidContent(content);
+  }
+
+  @Test
+  public void testGetWikiContentGit() {
+    System.setProperty("github.client.id", "dummy");
+    final String url = "https://github.com/jenkinsci/labelled-steps-plugin";
+    final String content = wikiService.getWikiContent(url);
+    assertValidContent(content);
   }
 
   @Test
@@ -59,10 +78,9 @@ public class WikiServiceTest {
 
   @Test
   public void testCleanWikiContent() throws IOException {
-    final String url = "https://wiki.jenkins.io/display/Git+Plugin";
     final File file = new File("src/test/resources/wiki_content.html");
     final String content = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-    final String cleanContent = wikiService.cleanWikiContent(content, url);
+    final String cleanContent = ConfluenceDirectExtractor.cleanWikiContent(content, wikiService);
     Assert.assertNotNull("Wiki content is null", cleanContent);
     final Document html = Jsoup.parseBodyFragment(cleanContent);
     html.getElementsByAttribute("href").forEach(element -> {
@@ -82,6 +100,49 @@ public class WikiServiceTest {
     final Element element = Jsoup.parseBodyFragment(String.format("<img id=\"test-image\" src=\"%s\"/>", src)).getElementById("test-image");
     wikiService.replaceAttribute(element, "src", baseUrl);
     Assert.assertEquals("Attribute replacement failed", baseUrl + src, element.attr("src"));
+  }
+
+  @Test
+  public void testConfluenceApiExtractor() {
+    ConfluenceApiExtractor confluenceApi = new ConfluenceApiExtractor();
+    assertInvalid(confluenceApi, "https://wiki.jenkins-ci.org");
+    assertInvalid(confluenceApi, "https://wiki.jenkins.io");
+    assertInvalid(confluenceApi, "https://wiki.jenkins.io/x/123");
+    assertValid(confluenceApi, "https://wiki.jenkins.io/display/JENKINS/Git+Plugin");
+    assertValid(confluenceApi, "http://wiki.jenkins-ci.org/display/jenkins/Git+Plugin");
+  }
+
+  @Test
+  public void testConfluenceDirectExtractor() {
+    ConfluenceDirectExtractor confluenceApi = new ConfluenceDirectExtractor();
+    assertValid(confluenceApi, "https://wiki.jenkins.io/pages/viewpage.action?pageId=60915753");
+    assertValid(confluenceApi, "https://wiki.jenkins.io/x/xyz");
+    assertInvalid(confluenceApi, "https://example.com");
+  }
+
+  @Test
+  public void testGithubExtractor() {
+    GithubExtractor githubApi = new GithubExtractor();
+    assertValid(githubApi, "https://github.com/jenkinsci/xyz");
+    assertValid(githubApi, "https://github.com/jenkinsci/xyz/");
+    assertValid(githubApi, "http://github.com/jenkinsci/xyz.git");
+    assertInvalid(githubApi, "https://github.com/other-org/repo");
+    assertInvalid(githubApi, "https://github.com/jenkinsci/xyz/blob/file.md");
+  }
+
+  private void assertInvalid(WikiExtractor confluenceApi, String string) {
+    Assert.assertNull(confluenceApi.getApiUrl(string));
+  }
+
+  private void assertValid(WikiExtractor confluenceApi, String string) {
+    Assert.assertNotNull(confluenceApi.getApiUrl(string));
+  }
+
+  private void assertValidContent(String content) {
+    Assert.assertNotNull("Wiki content is null", content);
+    Assert.assertThat(content, CoreMatchers.not(CoreMatchers.containsString(
+        HttpClientWikiService.EXTERNAL_DOCUMENTATION_PREFIX)));
+    Assert.assertFalse("Wiki content is empty", content.isEmpty());
   }
 
 }
