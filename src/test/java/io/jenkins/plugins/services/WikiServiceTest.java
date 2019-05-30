@@ -122,6 +122,7 @@ public class WikiServiceTest {
 
   @Test
   public void testGithubExtractor() {
+    System.setProperty("github.client.id", "dummy");
     GithubExtractor githubApi = new GithubExtractor();
     assertValid(githubApi, "https://github.com/jenkinsci/xyz");
     assertValid(githubApi, "https://github.com/jenkinsci/xyz/");
@@ -130,12 +131,12 @@ public class WikiServiceTest {
     assertInvalid(githubApi, "https://github.com/jenkinsci/xyz/blob/file.md");
   }
 
-  private void assertInvalid(WikiExtractor confluenceApi, String string) {
-    Assert.assertNull(confluenceApi.getApiUrl(string));
+  private void assertInvalid(WikiExtractor extractor, String string) {
+    Assert.assertNull(extractor.getApiUrl(string));
   }
 
-  private void assertValid(WikiExtractor confluenceApi, String string) {
-    Assert.assertNotNull(confluenceApi.getApiUrl(string));
+  private void assertValid(WikiExtractor extractor, String string) {
+    Assert.assertNotNull(extractor.getApiUrl(string));
   }
 
   private void assertValidContent(String content) {
