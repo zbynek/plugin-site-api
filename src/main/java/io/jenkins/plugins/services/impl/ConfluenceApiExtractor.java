@@ -15,7 +15,7 @@ public class ConfluenceApiExtractor implements WikiExtractor {
       .compile("^https?://wiki.jenkins(-ci.org|.io)/display/(jenkins|hudson)/(.*)$", Pattern.CASE_INSENSITIVE);
 
   @Override
-  public String extractHtml(String jsonStr, HttpClientWikiService wikiService) {
+  public String extractHtml(String jsonStr, String url, HttpClientWikiService wikiService) {
     try {
       JSONArray json = new JSONObject(jsonStr).getJSONArray("results");
       if (json.length() > 0) {

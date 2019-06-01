@@ -95,11 +95,32 @@ public class WikiServiceTest {
 
   @Test
   public void testReplaceAttribute() throws IOException {
-    final String baseUrl = "https://wiki.jenkins.io";
+    final String host = "https://wiki.jenkins.io";
+    final String basePath = "/display/JENKINS/";
+
     final String src = "/some-image.jpg";
-    final Element element = Jsoup.parseBodyFragment(String.format("<img id=\"test-image\" src=\"%s\"/>", src)).getElementById("test-image");
-    wikiService.replaceAttribute(element, "src", baseUrl);
-    Assert.assertEquals("Attribute replacement failed", baseUrl + src, element.attr("src"));
+    final Element element = makeImage(src);
+    wikiService.replaceAttribute(element, "src", host, basePath);
+    Assert.assertEquals("Attribute replacement failed", host + src, element.attr("src"));
+
+    final Element elementAbsolute = makeImage(host + src);
+    wikiService.replaceAttribute(elementAbsolute, "src", host, basePath);
+    Assert.assertEquals("Attribute replacement failed", host + src, elementAbsolute.attr("src"));
+  }
+
+  @Test
+  public void testReplaceAttributeRelative() throws IOException {
+    final String host = "https://github.com";
+    final String basePath = "/jenkinsci/beer-plugin/";
+
+    final String srcRelative = "some-image.jpg";
+    final Element element = makeImage(srcRelative);
+    wikiService.replaceAttribute(element, "src", host, basePath);
+    Assert.assertEquals("Attribute replacement failed", host + basePath + srcRelative, element.attr("src"));
+  }
+
+  private Element makeImage(String src) {
+    return Jsoup.parseBodyFragment(String.format("<img id=\"test-image\" src=\"%s\"/>", src)).getElementById("test-image");
   }
 
   @Test

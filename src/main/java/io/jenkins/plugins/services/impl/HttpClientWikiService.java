@@ -43,7 +43,7 @@ public class HttpClientWikiService implements WikiService {
   public static final List<WikiExtractor> WIKI_URLS = new ArrayList<>();
 
   public static final String EXTERNAL_DOCUMENTATION_PREFIX = "Documentation for this plugin is here: ";
-  
+
   static {
       WIKI_URLS.add(new ConfluenceApiExtractor());
       WIKI_URLS.add(new ConfluenceDirectExtractor());
@@ -63,7 +63,7 @@ public class HttpClientWikiService implements WikiService {
         }
       });
   }
- 
+
   public boolean isValidWikiUrl(String url) {
     return getExtractor(url).isPresent();
   }
@@ -91,7 +91,7 @@ public class HttpClientWikiService implements WikiService {
        String apiUrl = extractor.getApiUrl(wikiUrl);
        if (apiUrl != null) {
          List<Header> headers = extractor.getHeaders();
-         return extractor.extractHtml(getHttpContent(apiUrl, headers), this);
+         return extractor.extractHtml(getHttpContent(apiUrl, headers), wikiUrl, this);
        }
      }
      return null;
@@ -101,7 +101,6 @@ public class HttpClientWikiService implements WikiService {
     final HttpGet get = new HttpGet(url);
     headers.stream().forEach(get::setHeader);
     try (final CloseableHttpClient httpClient = getHttpClient();
-        
         final CloseableHttpResponse response = httpClient.execute(get)) {
       if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
         final HttpEntity entity = response.getEntity();
@@ -125,10 +124,19 @@ public class HttpClientWikiService implements WikiService {
     return WIKI_URLS.stream().filter(t -> (t.getApiUrl(url) != null)).findFirst();
   }
 
-  public void replaceAttribute(Element element, String attributeName, String baseUrl) {
+  /**
+   * @param element element to be processed
+   * @param attributeName attribute name
+   * @param host part of URL including protocol and host, no trailing slash
+   * @param path path to parent folder, including initial and trailing slash
+   */
+  public void replaceAttribute(Element element, String attributeName, String host, String path) {
     final String attribute = element.attr(attributeName);
     if (attribute.startsWith("/")) {
-      element.attr(attributeName, baseUrl + attribute);
+      element.attr(attributeName, host + attribute);
+    } else if (!attribute.startsWith("http:") && !attribute.startsWith("https:")
+        && !attribute.startsWith("#")) {
+      element.attr(attributeName, host + path + attribute);
     }
   }
 
@@ -170,6 +178,16 @@ public class HttpClientWikiService implements WikiService {
       return null;
     }
     return elements.first();
+  }
+
+  /**
+   * @param wikiContent top level element to be traversed
+   * @param host part of URL including protocol and host, no trailing slash
+   * @param path path to parent folder, including initial and trailing slash
+   */
+  public void convertLinksToAbsolute(Element wikiContent, String host, String path) {
+    wikiContent.getElementsByAttribute("href").forEach(element -> replaceAttribute(element, "href", host, path));
+    wikiContent.getElementsByAttribute("src").forEach(element -> replaceAttribute(element, "src", host, path));
   }
 
 }

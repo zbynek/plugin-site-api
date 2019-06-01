@@ -31,7 +31,7 @@ public class ConfluenceDirectExtractor implements WikiExtractor {
   }
 
   @Override
-  public String extractHtml(String httpContent, HttpClientWikiService service) {
+  public String extractHtml(String httpContent, String url, HttpClientWikiService service) {
     return cleanWikiContent(httpContent, service);
   }
 
@@ -53,8 +53,7 @@ public class ConfluenceDirectExtractor implements WikiExtractor {
     // Remove any table of contents
     wikiContent.getElementsByClass("toc").remove();
     // Replace href/src with the wiki url
-    wikiContent.getElementsByAttribute("href").forEach(element -> service.replaceAttribute(element, "href", BASE_URL));
-    wikiContent.getElementsByAttribute("src").forEach(element -> service.replaceAttribute(element, "src", BASE_URL));
+    service.convertLinksToAbsolute(wikiContent, BASE_URL, "/display/JENKINS/");
     return wikiContent.html();
   }
 

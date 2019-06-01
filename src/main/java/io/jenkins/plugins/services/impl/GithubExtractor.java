@@ -8,6 +8,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 public class GithubExtractor implements WikiExtractor {
 
@@ -34,8 +37,17 @@ public class GithubExtractor implements WikiExtractor {
   }
 
   @Override
-  public String extractHtml(String apiContent, HttpClientWikiService service) {
-    return apiContent;
+  public String extractHtml(String apiContent, String url, HttpClientWikiService service) {
+    Matcher matcher = REPO_PATTERN.matcher(url);
+    String host = "https://github.com";
+    if (!matcher.find()) {
+      throw new IllegalArgumentException("Invalid github URL" + url);
+    }
+    String path = "/jenkinsci/" + matcher.group(1);
+    final Document html = Jsoup.parse(apiContent);
+    final Element mainDiv = html.getElementsByTag("body").get(0).child(0);
+    service.convertLinksToAbsolute(mainDiv, host, path);
+    return mainDiv.toString();
   }
 
   @Override

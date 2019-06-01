@@ -18,10 +18,11 @@ public interface WikiExtractor {
    * </p>
    *
    * @param apiContent content retrieved from API
+   * @param documentation URL
    * @return cleaned content
    * @throws ServiceException in case something goes wrong
    */
-  String extractHtml(String apiContent, HttpClientWikiService service);
+  String extractHtml(String apiContent, String url, HttpClientWikiService service);
 
   /**
    * @return HTTP headers
