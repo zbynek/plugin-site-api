@@ -12,7 +12,7 @@ import org.json.JSONObject;
 public class ConfluenceApiExtractor implements WikiExtractor {
   private static final String WIKI_REST_API_TITLE = "https://wiki.jenkins.io/rest/api/content?expand=body.view&title=%s";
   private static final Pattern WIKI_URL_REGEXP_TITLE = Pattern
-      .compile("^https?://wiki.jenkins(-ci.org|.io)/display/(jenkins|hudson)/(.*)$", Pattern.CASE_INSENSITIVE);
+      .compile("^https?://wiki.jenkins(-ci.org|.io)/display/(jenkins|hudson)/([^/]*)/?$", Pattern.CASE_INSENSITIVE);
 
   @Override
   public String extractHtml(String jsonStr, String url, HttpClientWikiService wikiService) {

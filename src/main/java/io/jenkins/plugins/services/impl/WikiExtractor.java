@@ -2,6 +2,8 @@ package io.jenkins.plugins.services.impl;
 
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import org.apache.http.Header;
 
 public interface WikiExtractor {
@@ -10,7 +12,7 @@ public interface WikiExtractor {
    * @param wikiUrl content URL
    * @return API url that for accessing rendered content
    */
-  String getApiUrl(String wikiUrl);
+  String getApiUrl(@NotNull String wikiUrl);
 
   /**
    * <p>
@@ -22,7 +24,7 @@ public interface WikiExtractor {
    * @return cleaned content
    * @throws ServiceException in case something goes wrong
    */
-  String extractHtml(String apiContent, String url, HttpClientWikiService service);
+  String extractHtml(@NotNull String apiContent, String url, HttpClientWikiService service);
 
   /**
    * @return HTTP headers

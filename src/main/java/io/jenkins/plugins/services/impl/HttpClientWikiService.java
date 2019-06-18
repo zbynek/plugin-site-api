@@ -91,7 +91,11 @@ public class HttpClientWikiService implements WikiService {
        String apiUrl = extractor.getApiUrl(wikiUrl);
        if (apiUrl != null) {
          List<Header> headers = extractor.getHeaders();
-         return extractor.extractHtml(getHttpContent(apiUrl, headers), wikiUrl, this);
+         String content = getHttpContent(apiUrl, headers);
+         if (content == null) {
+           return null; // error logged in getHttpContent
+         }
+         return extractor.extractHtml(content, wikiUrl, this);
        }
      }
      return null;

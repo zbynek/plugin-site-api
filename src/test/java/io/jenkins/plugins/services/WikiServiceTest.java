@@ -1,30 +1,23 @@
 package io.jenkins.plugins.services;
 
-import io.jenkins.plugins.models.GeneratedPluginData;
-import io.jenkins.plugins.models.Plugin;
 import io.jenkins.plugins.services.impl.ConfluenceApiExtractor;
 import io.jenkins.plugins.services.impl.ConfluenceDirectExtractor;
-import io.jenkins.plugins.services.impl.DefaultConfigurationService;
 import io.jenkins.plugins.services.impl.GithubExtractor;
 import io.jenkins.plugins.services.impl.HttpClientWikiService;
 import io.jenkins.plugins.services.impl.WikiExtractor;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.hamcrest.BaseMatcher;
 import org.hamcrest.CoreMatchers;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 public class WikiServiceTest {
 
@@ -52,12 +45,12 @@ public class WikiServiceTest {
   }
 
   @Test
-  @Ignore("It's unclear what this is supposed to test")
   public void testGetWikiContent404() {
-    final String url = "https://wiki.jenkins.io/display/JENKINS/nonexistant?foo";
+    final String url = "https://wiki.jenkins.io/display/JENKINS/H2+API+Plugin";
     final String content = wikiService.getWikiContent(url);
     Assert.assertNotNull("Wiki content is null", content);
-    Assert.assertEquals(HttpClientWikiService.getNonWikiContent(url), content);
+    // if we know it's a 404, show "not found" rather than a link
+    Assert.assertEquals(HttpClientWikiService.getNoDocumentationFound(), content);
   }
 
   @Test
@@ -74,7 +67,6 @@ public class WikiServiceTest {
     Assert.assertNotNull("Wiki content is null", content);
     Assert.assertEquals(HttpClientWikiService.getNoDocumentationFound(), content);
   }
-
 
   @Test
   public void testCleanWikiContent() throws IOException {
@@ -129,7 +121,9 @@ public class WikiServiceTest {
     assertInvalid(confluenceApi, "https://wiki.jenkins-ci.org");
     assertInvalid(confluenceApi, "https://wiki.jenkins.io");
     assertInvalid(confluenceApi, "https://wiki.jenkins.io/x/123");
+    assertInvalid(confluenceApi, "https://wiki.jenkins.io/display/JENKINS/Git+Plugin/2");
     assertValid(confluenceApi, "https://wiki.jenkins.io/display/JENKINS/Git+Plugin");
+    assertValid(confluenceApi, "https://wiki.jenkins.io/display/JENKINS/Git+Plugin/");
     assertValid(confluenceApi, "http://wiki.jenkins-ci.org/display/jenkins/Git+Plugin");
   }
 
