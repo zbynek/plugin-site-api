@@ -39,15 +39,25 @@ public class GithubExtractor implements WikiExtractor {
   @Override
   public String extractHtml(String apiContent, String url, HttpClientWikiService service) {
     Matcher matcher = REPO_PATTERN.matcher(url);
-    String host = "https://github.com";
     if (!matcher.find()) {
       throw new IllegalArgumentException("Invalid github URL" + url);
     }
-    String path = "/jenkinsci/" + matcher.group(1);
     final Document html = Jsoup.parse(apiContent);
     final Element mainDiv = html.getElementsByTag("body").get(0).child(0);
-    service.convertLinksToAbsolute(mainDiv, host, path);
+    //TODO(oleg_nenashev): Support organization and branch customization?
+    convertLinksToAbsolute(service, mainDiv, "jenkinsci", matcher.group(1), "master");
     return mainDiv.toString();
+  }
+
+  private void convertLinksToAbsolute(HttpClientWikiService service, Element wikiContent, String orgName, String repoName, String branch) {
+    String documentationHost = String.format("https://github.com/%s/%s/blob/%s", orgName, repoName, branch);
+    String imageHost = String.format("https://raw.githubusercontent.com/%s/%s/%s", orgName, repoName, branch);
+
+    // Relative hyperlinks, we resolve "/docs/rest-api.adoc" as https://github.com/jenkinsci/folder-auth-plugin/blob/master/docs/rest-api.adoc
+    wikiContent.getElementsByAttribute("href").forEach(element -> service.replaceAttribute(element, "href", documentationHost, ""));
+    //TODO: Should we host images from our infrastructure? What are the GitHub terms here?
+    // Relative image inclusions, we resolve /docs/images/screenshot.png as https://raw.githubusercontent.com/jenkinsci/folder-auth-plugin/master/docs/images/screenshot.png
+    wikiContent.getElementsByAttribute("src").forEach(element -> service.replaceAttribute(element, "src", imageHost, ""));
   }
 
   @Override
