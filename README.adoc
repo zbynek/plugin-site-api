@@ -43,6 +43,7 @@ DATA_FILE_URL="https://ci.jenkins.io/job/Infra/job/plugin-site-api/job/generate-
 ----
 
 This will launch an embedded Jetty container accessible at `http://localhost:8080`.
+`DATA_FILE_URL` can point to `http`/`https` URLS or to local files using the `file://${path}` syntax.
 
 == Run Docker Plugin Site API
 
@@ -58,7 +59,11 @@ mvn -P generatePluginData
 ----
 
 This will generate a new file in `target/plugins.json.gzip` consisting of plugin information and installation
-statistics. This file should be uploaded to DATA_FILE_URL.
+statistics. This file can be now passed as `DATA_FILE_URL`:
+
+```
+DATA_FILE_URL="file://$(pwd)/target/plugins.json.gzip" mvn jetty:run
+```
 
 == REST API Reference
 
