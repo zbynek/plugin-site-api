@@ -2,6 +2,8 @@ package io.jenkins.plugins.services.impl;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,15 +19,22 @@ public class GithubExtractor implements WikiExtractor {
   private static final String README_ENDPOINT = "https://api.github.com/repos/jenkinsci/%s/readme?client_id=%s&client_secret=%s";
   private static final Pattern REPO_PATTERN = Pattern
       .compile("https?://github.com/jenkinsci/([^/.]+)(\\.git)?(/|/blob/master/README\\.md)?$");
+  private static final Logger LOGGER = Logger.getLogger(GithubExtractor.class.getName());
 
   @Override
   public String getApiUrl(String wikiUrl) {
     Matcher matcher = REPO_PATTERN.matcher(wikiUrl);
-    String clientId = getClientId();
-    if (clientId != null && matcher.find()) {
-      return String.format(README_ENDPOINT, matcher.group(1), clientId, System.getenv("GITHUB_SECRET"));
+    if (!matcher.find()) {
+      return null;
     }
-    return null;
+
+    String clientId = getClientId();
+    if (clientId == null) {
+      LOGGER.log(Level.WARNING, "Cannot retrieve API URL for {0}. No GitHub Client ID specified", wikiUrl);
+      return null;
+    }
+
+    return String.format(README_ENDPOINT, matcher.group(1), clientId, System.getenv("GITHUB_SECRET"));
   }
 
   private String getClientId() {
