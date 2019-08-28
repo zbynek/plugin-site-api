@@ -59,7 +59,7 @@ public class ImpliedDependenciesCoreResourceParser implements PluginDataParser {
     List<Dependency> impliedDependencies = new ArrayList<>();
     VersionNumber requiredCore = new VersionNumber(plugin.getRequiredCore());
     for (Detachment d : detachments) {
-      if (requiredCore.isOlderThan(d.detachedCore)) {
+      if (requiredCore.isOlderThan(d.detachedCore) && !d.plugin.equals(plugin.getName())) {
         impliedDependencies.add(new Dependency(d.plugin, dependencyNameToTitleMap.get(d.plugin), false, d.impliedVersion.toString(), true));
       }
     }
