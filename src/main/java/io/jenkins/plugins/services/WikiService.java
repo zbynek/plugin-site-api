@@ -14,14 +14,4 @@ public interface WikiService {
    */
   String getWikiContent(String url) throws ServiceException;
 
-  /**
-   * <p>Clean wiki content so it's presentable to the UI</p>
-   *
-   * @param content Wiki content
-   * @param url Original URL
-   * @return cleaned content
-   * @throws ServiceException in case something goes wrong
-   */
-  String cleanWikiContent(String content, String url) throws ServiceException;
-
 }
