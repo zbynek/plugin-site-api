@@ -6,6 +6,7 @@ import com.google.common.cache.LoadingCache;
 import io.jenkins.plugins.services.ServiceException;
 import io.jenkins.plugins.services.WikiService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
@@ -25,6 +26,7 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -38,11 +40,14 @@ public class HttpClientWikiService implements WikiService {
 
   private LoadingCache<String, String> wikiContentCache;
 
-  public static final List<String> WIKI_URLS = new ArrayList<>();
+  public static final List<WikiExtractor> WIKI_URLS = new ArrayList<>();
+
+  public static final String EXTERNAL_DOCUMENTATION_PREFIX = "Documentation for this plugin is here: ";
 
   static {
-      WIKI_URLS.add("https://wiki.jenkins-ci.org");
-      WIKI_URLS.add("https://wiki.jenkins.io");
+      WIKI_URLS.add(new ConfluenceApiExtractor());
+      WIKI_URLS.add(new ConfluenceDirectExtractor());
+      WIKI_URLS.add(new GithubExtractor());
   }
 
   @PostConstruct
@@ -53,15 +58,14 @@ public class HttpClientWikiService implements WikiService {
       .build(new CacheLoader<String, String>() {
         @Override
         public String load(String url) throws Exception {
-          // Load the wiki content then clean it
-          final String rawContent = doGetWikiContent(url);
-          return cleanWikiContent(rawContent, url);
+          // Load and clean the wiki content
+          return doGetWikiContent(url);
         }
       });
   }
 
-  private boolean isValidWikiUrl(String url) {
-    return WIKI_URLS.stream().anyMatch(url::startsWith);
+  public boolean isValidWikiUrl(String url) {
+    return getExtractor(url).isPresent();
   }
 
   @Override
@@ -82,16 +86,34 @@ public class HttpClientWikiService implements WikiService {
     }
   }
 
-  private String doGetWikiContent(String url) {
+  private String doGetWikiContent(String wikiUrl) {
+    for (WikiExtractor extractor: WIKI_URLS) {
+       String apiUrl = extractor.getApiUrl(wikiUrl);
+       if (apiUrl != null) {
+         List<Header> headers = extractor.getHeaders();
+         String content = getHttpContent(apiUrl, headers);
+         if (content == null) {
+           return null; // error logged in getHttpContent
+         }
+         return extractor.extractHtml(content, wikiUrl, this);
+       }
+     }
+     return null;
+  }
+
+  private String getHttpContent(String url, List<Header> headers) {
     final HttpGet get = new HttpGet(url);
-    try (final CloseableHttpClient httpClient = getHttpClient(); final CloseableHttpResponse response = httpClient.execute(get)) {
+    headers.stream().forEach(get::setHeader);
+    try (final CloseableHttpClient httpClient = getHttpClient();
+        final CloseableHttpResponse response = httpClient.execute(get)) {
       if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
         final HttpEntity entity = response.getEntity();
         final String html = EntityUtils.toString(entity);
         EntityUtils.consume(entity);
         return html;
       } else {
-        final String msg = String.format("Unable to get content from %s - returned status code %d", url, response.getStatusLine().getStatusCode());
+        final String msg = String.format("Unable to get content from %s - returned status code %d", url,
+            response.getStatusLine().getStatusCode());
         logger.warn(msg);
         return null;
       }
@@ -102,48 +124,30 @@ public class HttpClientWikiService implements WikiService {
     }
   }
 
-  @Override
-  public String cleanWikiContent(String content, String url) throws ServiceException {
-    if (content == null || content.trim().isEmpty()) {
-      logger.warn("Can't clean null content");
-      return null;
-    }
-    final Document html = Jsoup.parse(content);
-    final Elements elements = html.getElementsByClass("wiki-content");
-    if (elements.isEmpty()) {
-      logger.warn("wiki-content not found in content");
-      return null;
-    }
-    final Element wikiContent = elements.first();
-    // Remove the entire span at the top with the "Plugin Information" inside
-    final Element topPluginInformation = wikiContent.select(".conf-macro.output-inline th :contains(Plugin Information)").first();
-    if (topPluginInformation != null) {
-      Element element = topPluginInformation;
-      while (!element.tagName().equals("table")) {
-        element = element.parent();
-      }
-      element.remove();
-    }
-    // Remove any table of contents
-    wikiContent.getElementsByClass("toc").remove();
-    // Replace href/src with the wiki url
-    final String baseUrl = WIKI_URLS.stream().filter(url::startsWith).findFirst().orElse(null);
-    wikiContent.getElementsByAttribute("href").forEach(element -> replaceAttribute(element, "href", baseUrl));
-    wikiContent.getElementsByAttribute("src").forEach(element -> replaceAttribute(element, "src", baseUrl));
-    return wikiContent.html();
+  private Optional<WikiExtractor> getExtractor(String url) {
+    return WIKI_URLS.stream().filter(t -> (t.getApiUrl(url) != null)).findFirst();
   }
 
-  public void replaceAttribute(Element element, String attributeName, String baseUrl) {
+  /**
+   * @param element element to be processed
+   * @param attributeName attribute name
+   * @param host part of URL including protocol and host, no trailing slash
+   * @param path path to parent folder, including initial and trailing slash
+   */
+  public void replaceAttribute(Element element, String attributeName, String host, String path) {
     final String attribute = element.attr(attributeName);
     if (attribute.startsWith("/")) {
-      element.attr(attributeName, baseUrl + attribute);
+      element.attr(attributeName, host + attribute);
+    } else if (!attribute.startsWith("http:") && !attribute.startsWith("https:")
+        && !attribute.startsWith("#")) {
+      element.attr(attributeName, host + path + attribute);
     }
   }
 
   public static String getNonWikiContent(String url) {
     final Element body = Jsoup.parseBodyFragment("<div></div>").body();
     final Element div = body.select("div").first();
-    div.text("Documentation for this plugin is here: ");
+    div.text(EXTERNAL_DOCUMENTATION_PREFIX);
     final Element link = div.appendElement("a");
     link.text(url);
     link.attr("href", url);
@@ -164,6 +168,30 @@ public class HttpClientWikiService implements WikiService {
       .setSocketTimeout(5000)
       .build();
     return HttpClients.custom().setDefaultRequestConfig(requestConfig).build();
+  }
+
+  public Element getElementByClassFromText(String className, String content) {
+    if (content == null || content.trim().isEmpty()) {
+      logger.warn("Can't clean null content");
+      return null;
+    }
+    final Document html = Jsoup.parse(content);
+    final Elements elements = html.getElementsByClass(className);
+    if (elements.isEmpty()) {
+      logger.warn("wiki-content not found in content");
+      return null;
+    }
+    return elements.first();
+  }
+
+  /**
+   * @param wikiContent top level element to be traversed
+   * @param host part of URL including protocol and host, no trailing slash
+   * @param path path to parent folder, including initial and trailing slash
+   */
+  public void convertLinksToAbsolute(Element wikiContent, String host, String path) {
+    wikiContent.getElementsByAttribute("href").forEach(element -> replaceAttribute(element, "href", host, path));
+    wikiContent.getElementsByAttribute("src").forEach(element -> replaceAttribute(element, "src", host, path));
   }
 
 }

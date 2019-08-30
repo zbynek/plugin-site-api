@@ -39,16 +39,18 @@ contains new data. If so the application will the reindex the Elasticsearch data
 == Run Local Plugin Site API
 
 ----
+GITHUB_CLIENT_ID="dummy"
 DATA_FILE_URL="https://ci.jenkins.io/job/Infra/job/plugin-site-api/job/generate-data/lastSuccessfulBuild/artifact/plugins.json.gzip" mvn jetty:run
 ----
 
 This will launch an embedded Jetty container accessible at `http://localhost:8080`.
+If `GITHUB_CLIENT_ID` is not valid GitHub Oauth App client ID, your site will be limited to fetching 60 plugin documentation pages per hour.
 
 == Run Docker Plugin Site API
 
 ----
 docker build -t jenkinsciinfra/plugin-site-api .
-docker run -p 8080:8080 -it -e DATA_FILE_URL="http://url.to/plugins.json.gzip" jenkinsciinfra/plugin-site-api
+docker run -p 8080:8080 -it -e DATA_FILE_URL="http://url.to/plugins.json.gzip" -e GITHUB_CLIENT_ID="dummy" jenkinsciinfra/plugin-site-api
 ----
 
 == Rebuild Elasticsearch data
