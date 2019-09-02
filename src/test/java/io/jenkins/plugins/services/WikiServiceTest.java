@@ -74,7 +74,7 @@ public class WikiServiceTest {
     final String content = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
     final String cleanContent = ConfluenceDirectExtractor.cleanWikiContent(content, wikiService);
     Assert.assertNotNull("Wiki content is null", cleanContent);
-    assertAllUrlsMatch(cleanContent, "https?://.*", "https://.*");
+    assertAllLinksMatch(cleanContent, "https?://.*", "https://.*");
   }
   
   @Test
@@ -84,7 +84,7 @@ public class WikiServiceTest {
     final String cleanContent = new GithubExtractor().extractHtml(content, 
         "https://github.com/jenkinsci/configuration-as-code-plugin", wikiService);
     Assert.assertNotNull("Wiki content is null", cleanContent);
-    assertAllUrlsMatch(cleanContent, "(#|https?://).*", "https?://.*");
+    assertAllLinksMatch(cleanContent, "(#|https?://).*", "https?://.*");
   }
   
   @Test
@@ -94,13 +94,13 @@ public class WikiServiceTest {
     final String cleanContent = new GithubExtractor().extractHtml(content, 
         "https://github.com/jenkinsci/configuration-as-code-plugin", wikiService);
     Assert.assertNotNull("Wiki content is null", cleanContent);
-    String regexp = "#getting-started|https://github.com/jenkinsci/configuration-as-code-plugin/blob/master/.*";
-    String srcRegexp = "https://raw.githubusercontent.com/jenkinsci/configuration-as-code-plugin/master/.*|"
+    String hrefRegexp = "#getting-started|https://github.com/jenkinsci/configuration-as-code-plugin/blob/master/.*";
+    String srcRegexp = "https://cdn.jsdelivr.net/gh/jenkinsci/configuration-as-code-plugin@master/.*"
          + "|https://camo.githubusercontent.com/[a-z0-9]*/[a-z0-9]*";
-    assertAllUrlsMatch(cleanContent, regexp, srcRegexp);
+    assertAllLinksMatch(cleanContent, hrefRegexp, srcRegexp);
   }
   
-  private void assertAllUrlsMatch(String content, String hrefRegexp, String srcRegexp) {
+  private void assertAllLinksMatch(String content, String hrefRegexp, String srcRegexp) {
     final Document html = Jsoup.parseBodyFragment(content);
     html.getElementsByAttribute("href").forEach(element -> {
       final String value = element.attr("href");

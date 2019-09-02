@@ -60,12 +60,12 @@ public class GithubExtractor implements WikiExtractor {
 
   private void convertLinksToAbsolute(HttpClientWikiService service, Element wikiContent, String orgName, String repoName, String branch) {
     String documentationHost = String.format("https://github.com/%s/%s/blob/%s", orgName, repoName, branch);
-    String imageHost = String.format("https://raw.githubusercontent.com/%s/%s/%s", orgName, repoName, branch);
+    String imageHost = String.format("https://cdn.jsdelivr.net/gh/%s/%s@%s", orgName, repoName, branch);
 
     // Relative hyperlinks, we resolve "/docs/rest-api.adoc" as https://github.com/jenkinsci/folder-auth-plugin/blob/master/docs/rest-api.adoc
     wikiContent.getElementsByAttribute("href").forEach(element -> service.replaceAttribute(element, "href", documentationHost, "/"));
-    //TODO: Should we host images from our infrastructure? What are the GitHub terms here?
-    // Relative image inclusions, we resolve /docs/images/screenshot.png as https://raw.githubusercontent.com/jenkinsci/folder-auth-plugin/master/docs/images/screenshot.png
+    
+    // Relative image inclusions, we resolve /docs/images/screenshot.png as https://cdn.jsdelivr.net/gh/jenkinsci/folder-auth-plugin@master/docs/images/screenshot.png
     wikiContent.getElementsByAttribute("src").forEach(element -> service.replaceAttribute(element, "src", imageHost, "/"));
   }
 
