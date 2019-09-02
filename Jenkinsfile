@@ -11,7 +11,7 @@ if (!isPullRequest) {
     ])
 }
 
-node('docker') {
+node('docker&&linux') {
     /* Make sure we're always starting with a fresh workspace */
     deleteDir()
 

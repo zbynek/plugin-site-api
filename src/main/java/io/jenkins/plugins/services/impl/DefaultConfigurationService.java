@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
@@ -44,9 +45,26 @@ public class DefaultConfigurationService implements ConfigurationService {
 
   @Override
   public GeneratedPluginData getIndexData() throws ServiceException {
+    String url = getDataFileUrl();
+    if (url.startsWith("file:///")) {
+      String path = url.substring(7);
+      final File dataFile = new File(path);
+      final String data = readGzipFile(dataFile);
+      try {
+        final GeneratedPluginData generated = JsonObjectMapper.getObjectMapper().readValue(data, GeneratedPluginData.class);
+        modifyType = ModifyType.NONE;
+        modifyValue = null;
+        return generated;
+      } catch (Exception ex) {
+        logger.error("Problem getting data file", ex);
+        throw new ServiceException("Problem getting data file", ex);
+      }
+    }
+
+
     final CloseableHttpClient httpClient = HttpClients.createDefault();
     try {
-      final String url = getDataFileUrl();
+
       if (!hasPluginDataChanged(httpClient, url)) {
         logger.info("Plugin data file hasn't changed");
         return null;
