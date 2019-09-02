@@ -5,7 +5,6 @@ import io.jenkins.plugins.generate.PluginDataParser;
 import io.jenkins.plugins.models.Dependency;
 import io.jenkins.plugins.models.Plugin;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.client.HttpClient;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -15,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 /**
  * Adds implied dependencies to detached plugins if a plugin's core dependency is old.
