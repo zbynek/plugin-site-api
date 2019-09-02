@@ -59,8 +59,8 @@ public class GithubExtractor implements WikiExtractor {
   }
 
   private void convertLinksToAbsolute(HttpClientWikiService service, Element wikiContent, String orgName, String repoName, String branch) {
-    String documentationHost = String.format("https://github.com/%s/%s/blob/%s", orgName, repoName, branch);
-    String imageHost = String.format("https://raw.githubusercontent.com/%s/%s/%s", orgName, repoName, branch);
+    String documentationHost = String.format("https://github.com/%s/%s/blob/%s/", orgName, repoName, branch);
+    String imageHost = String.format("https://raw.githubusercontent.com/%s/%s/%s/", orgName, repoName, branch);
 
     // Relative hyperlinks, we resolve "/docs/rest-api.adoc" as https://github.com/jenkinsci/folder-auth-plugin/blob/master/docs/rest-api.adoc
     wikiContent.getElementsByAttribute("href").forEach(element -> service.replaceAttribute(element, "href", documentationHost, ""));
