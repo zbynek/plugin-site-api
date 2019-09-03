@@ -69,19 +69,46 @@ public class WikiServiceTest {
   }
 
   @Test
-  public void testCleanWikiContent() throws IOException {
+  public void testCleanWikiContentConfluence() throws IOException {
     final File file = new File("src/test/resources/wiki_content.html");
     final String content = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
     final String cleanContent = ConfluenceDirectExtractor.cleanWikiContent(content, wikiService);
     Assert.assertNotNull("Wiki content is null", cleanContent);
-    final Document html = Jsoup.parseBodyFragment(cleanContent);
+    assertAllLinksMatch(cleanContent, "https?://.*", "https://.*");
+  }
+  
+  @Test
+  public void testCleanWikiContentGithub() throws IOException {
+    final File file = new File("src/test/resources/github_content.html");
+    final String content = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+    final String cleanContent = new GithubExtractor().extractHtml(content, 
+        "https://github.com/jenkinsci/configuration-as-code-plugin", wikiService);
+    Assert.assertNotNull("Wiki content is null", cleanContent);
+    assertAllLinksMatch(cleanContent, "(#|https?://).*", "https?://.*");
+  }
+  
+  @Test
+  public void testCleanWikiExcerptGithub() throws IOException {
+    final File file = new File("src/test/resources/github_excerpt.html");
+    final String content = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+    final String cleanContent = new GithubExtractor().extractHtml(content, 
+        "https://github.com/jenkinsci/configuration-as-code-plugin", wikiService);
+    Assert.assertNotNull("Wiki content is null", cleanContent);
+    String hrefRegexp = "#getting-started|https://github.com/jenkinsci/configuration-as-code-plugin/blob/master/.*";
+    String srcRegexp = "https://cdn.jsdelivr.net/gh/jenkinsci/configuration-as-code-plugin@master/.*"
+         + "|https://camo.githubusercontent.com/[a-z0-9]*/[a-z0-9]*";
+    assertAllLinksMatch(cleanContent, hrefRegexp, srcRegexp);
+  }
+  
+  private void assertAllLinksMatch(String content, String hrefRegexp, String srcRegexp) {
+    final Document html = Jsoup.parseBodyFragment(content);
     html.getElementsByAttribute("href").forEach(element -> {
       final String value = element.attr("href");
-      Assert.assertFalse("Wiki content not clean - href references to root : " + value, value.startsWith("/"));
+      Assert.assertTrue("Wiki content not clean - href references to root : " + value, value.matches(hrefRegexp));
     });
     html.getElementsByAttribute("src").forEach(element -> {
       final String value = element.attr("src");
-      Assert.assertFalse("Wiki content not clean - src references to root : " + value, value.startsWith("/"));
+      Assert.assertTrue("Wiki content not clean - src references to root : " + value, value.matches(srcRegexp));
     });
   }
 

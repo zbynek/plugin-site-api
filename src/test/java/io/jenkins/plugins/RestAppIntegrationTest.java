@@ -1,8 +1,6 @@
 package io.jenkins.plugins;
 
 import io.jenkins.plugins.models.*;
-import io.jenkins.plugins.services.SearchOptions;
-import io.jenkins.plugins.services.SortBy;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.jetty.JettyTestContainerFactory;

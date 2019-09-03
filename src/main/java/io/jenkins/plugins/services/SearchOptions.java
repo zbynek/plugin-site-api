@@ -1,6 +1,5 @@
 package io.jenkins.plugins.services;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 

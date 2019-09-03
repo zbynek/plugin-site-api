@@ -1,0 +1,310 @@
+<div id="readme" class="instapaper_body md" data-path="README.md"><article class="markdown-body entry-content p-5" itemprop="text"><h1><a id="user-content-jenkins-configuration-as-code-aka-jcasc-plugin" class="anchor" aria-hidden="true" href="#jenkins-configuration-as-code-aka-jcasc-plugin"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Jenkins Configuration as Code (a.k.a. JCasC) Plugin</h1>
+<p><a href="https://ci.jenkins.io/job/Plugins/job/configuration-as-code-plugin/job/master/" rel="nofollow"><img src="https://camo.githubusercontent.com/5a28ee7d5431f9ce2c32d14815bacae1cc79f7bc/68747470733a2f2f63692e6a656e6b696e732e696f2f6a6f622f506c7567696e732f6a6f622f636f6e66696775726174696f6e2d61732d636f64652d706c7567696e2f6a6f622f6d61737465722f62616467652f69636f6e" alt="Build Status" data-canonical-src="https://ci.jenkins.io/job/Plugins/job/configuration-as-code-plugin/job/master/badge/icon" style="max-width:100%;"></a>
+<a href="https://travis-ci.org/jenkinsci/configuration-as-code-plugin" rel="nofollow"><img src="https://camo.githubusercontent.com/fd860323d89c91c8cf3ab0c4ae2ac7a54d065588/68747470733a2f2f696d672e736869656c64732e696f2f7472617669732f6a656e6b696e7363692f636f6e66696775726174696f6e2d61732d636f64652d706c7567696e2e7376673f6c6f676f3d747261766973266c6162656c3d6275696c64266c6f676f436f6c6f723d7768697465" alt="Travis" data-canonical-src="https://img.shields.io/travis/jenkinsci/configuration-as-code-plugin.svg?logo=travis&amp;label=build&amp;logoColor=white" style="max-width:100%;"></a>
+<a href="https://github.com/jenkinsci/configuration-as-code-plugin/graphs/contributors"><img src="https://camo.githubusercontent.com/46d749650389a2ee9eda27599bda7e17b85e20db/68747470733a2f2f696d672e736869656c64732e696f2f6769746875622f636f6e7472696275746f72732f6a656e6b696e7363692f636f6e66696775726174696f6e2d61732d636f64652d706c7567696e2e737667" alt="Contributors" data-canonical-src="https://img.shields.io/github/contributors/jenkinsci/configuration-as-code-plugin.svg" style="max-width:100%;"></a>
+<a href="https://www.codacy.com/app/casz/configuration-as-code-plugin" rel="nofollow"><img src="https://camo.githubusercontent.com/f9ee6b966a728fb3726776fc8a9ae3702d2c6998/68747470733a2f2f6170692e636f646163792e636f6d2f70726f6a6563742f62616467652f47726164652f3163383732383138623436663466646438393065346132326166306265653863" alt="Codacy Badge" data-canonical-src="https://api.codacy.com/project/badge/Grade/1c872818b46f4fdd890e4a22af0bee8c" style="max-width:100%;"></a>
+<a href="https://plugins.jenkins.io/configuration-as-code" rel="nofollow"><img src="https://camo.githubusercontent.com/10a9a0adee497126b02845247f2abd01ce68470f/68747470733a2f2f696d672e736869656c64732e696f2f6a656e6b696e732f706c7567696e2f762f636f6e66696775726174696f6e2d61732d636f64652e737667" alt="Jenkins Plugin" data-canonical-src="https://img.shields.io/jenkins/plugin/v/configuration-as-code.svg" style="max-width:100%;"></a>
+<a href="https://github.com/jenkinsci/configuration-as-code-plugin/releases/latest"><img src="https://camo.githubusercontent.com/70dcc9753beab7c2776df882af2a079cd6e2e9b5/68747470733a2f2f696d672e736869656c64732e696f2f6769746875622f72656c656173652f6a656e6b696e7363692f636f6e66696775726174696f6e2d61732d636f64652d706c7567696e2e7376673f6c6162656c3d72656c65617365" alt="GitHub release" data-canonical-src="https://img.shields.io/github/release/jenkinsci/configuration-as-code-plugin.svg?label=release" style="max-width:100%;"></a>
+<a href="https://plugins.jenkins.io/configuration-as-code" rel="nofollow"><img src="https://camo.githubusercontent.com/6e01b2bc63576dbc6b24fb5b935732a7e8c82970/68747470733a2f2f696d672e736869656c64732e696f2f6a656e6b696e732f706c7567696e2f692f636f6e66696775726174696f6e2d61732d636f64652e7376673f636f6c6f723d626c7565" alt="Jenkins Plugin Installs" data-canonical-src="https://img.shields.io/jenkins/plugin/i/configuration-as-code.svg?color=blue" style="max-width:100%;"></a>
+<a href="https://gitter.im/jenkinsci/configuration-as-code-plugin" rel="nofollow"><img src="https://camo.githubusercontent.com/cfeaa63629a6fcec68b88dbccdfd241ddb84aa65/68747470733a2f2f6261646765732e6769747465722e696d2f6a656e6b696e7363692f636f6e66696775726174696f6e2d61732d636f64652d706c7567696e2e737667" alt="Gitter" data-canonical-src="https://badges.gitter.im/jenkinsci/configuration-as-code-plugin.svg" style="max-width:100%;"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="plugin/src/main/webapp/img/logo-head.svg"><img src="plugin/src/main/webapp/img/logo-head.svg" width="192" style="max-width:100%;"></a></p>
+<p>See <a href="https://docs.google.com/presentation/d/1VsvDuffinmxOjg0a7irhgJSRWpCzLg_Yskf7Fw7FpBg/edit?usp=sharing" rel="nofollow">presentation slides</a> from Jenkins World 2018.</p>
+<p>Join our Jenkins Configuration as Code office hours meeting scheduled for every second Wednesday. Use the Hangout on Air link from our <a href="https://gitter.im/jenkinsci/configuration-as-code-plugin" rel="nofollow">Gitter</a> chat channel. As an alternative, use the link from the <a href="https://calendar.google.com/event?action=TEMPLATE&amp;tmeid=MmdwdTE1cTFvaGw1NGUycGxqdWUwcXExaWFfMjAxODA3MjVUMDcwMDAwWiBld2VAcHJhcW1hLm5ldA&amp;tmsrc=ewe%40praqma.net&amp;scp=ALL" rel="nofollow">invitation</a>. See previous <a href="https://docs.google.com/document/d/1Hm07Q1egWL6VVAqNgu27bcMnqNZhYJmXKRvknVw4Y84/edit?usp=sharing" rel="nofollow">meeting minutes</a>.</p>
+<h2><a id="user-content-introduction" class="anchor" aria-hidden="true" href="#introduction"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Introduction</h2>
+<p>Setting up Jenkins is a complex process, as both Jenkins and its plugins require some tuning and configuration,
+with dozens of parameters to set within the web UI <code>manage</code> section.</p>
+<p>Experienced Jenkins users rely on groovy init scripts to customize Jenkins and enforce desired state. Those
+scripts directly invoke Jenkins API and as such can do everything (at your own risk). But they also require
+you know Jenkins internals, and are confident in writing groovy scripts on top of Jenkins API.</p>
+<p>The Configuration as Code plugin has been designed as an <em><strong>opinionated</strong></em> way to configure Jenkins based on
+human-readable declarative configuration files. Writing such a file should be feasible without being a Jenkins
+expert, just translating into <em>code</em> a configuration process one is used to executing in the web UI.</p>
+<p><a target="_blank" rel="noopener noreferrer" href="images/sample_form.png"><img src="images/sample_form.png" alt="configuration form" style="max-width:100%;"></a></p>
+<p>This plugin aims to replace above user interface based configuration with the below text based configuration.</p>
+<div class="highlight highlight-source-yaml"><pre><span class="pl-ent">jenkins</span>:
+  <span class="pl-ent">securityRealm</span>:
+    <span class="pl-ent">ldap</span>:
+      <span class="pl-ent">configurations</span>:
+        - <span class="pl-ent">groupMembershipStrategy</span>:
+            <span class="pl-ent">fromUserRecord</span>:
+              <span class="pl-ent">attributeName</span>: <span class="pl-s"><span class="pl-pds">"</span>memberOf<span class="pl-pds">"</span></span>
+          <span class="pl-ent">inhibitInferRootDN</span>: <span class="pl-c1">false</span>
+          <span class="pl-ent">rootDN</span>: <span class="pl-s"><span class="pl-pds">"</span>dc=acme,dc=org<span class="pl-pds">"</span></span>
+          <span class="pl-ent">server</span>: <span class="pl-s"><span class="pl-pds">"</span>ldaps://ldap.acme.org:1636<span class="pl-pds">"</span></span></pre></div>
+<p>In addition, we want to have a well documented syntax file, and tooling to assist in writing and testing,
+so end users have full guidance in using this tool set and do not have to search for examples on the Internet.</p>
+<h2><a id="user-content-getting-started" class="anchor" aria-hidden="true" href="#getting-started"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Getting Started</h2>
+<p>First, start a Jenkins instance with the <a href="https://plugins.jenkins.io/configuration-as-code" rel="nofollow">Configuration as Code</a> plugin installed.</p>
+<ul>
+<li>Those running Jenkins as a <a href="https://github.com/jenkinsci/docker">Docker</a> container (and maybe also <a href="https://github.com/jenkinsci/docker#preinstalling-plugins">pre-installing plugins</a>), do include <a href="https://plugins.jenkins.io/configuration-as-code" rel="nofollow">Configuration as Code</a> plugin.</li>
+</ul>
+<p>Second, the plugin looks for the <code>CASC_JENKINS_CONFIG</code> environment variable. The variable can point to any of the following:</p>
+<ul>
+<li>Path to a folder containing a set of config files. For example, <code>/var/jenkins_home/casc_configs</code>.</li>
+<li>A full path to a single file. For example, <code>/var/jenkins_home/casc_configs/jenkins.yaml</code>.</li>
+<li>A URL pointing to a file served on the web. For example, <code>https://acme.org/jenkins.yaml</code>.</li>
+</ul>
+<p>If <code>CASC_JENKINS_CONFIG</code> points to a folder, the plugin will recursively traverse the folder to find file (suffix with .yml,.yaml,.YAML,.YML), but doesn't contain hidden files or hidden subdirectories. It doesn't follow symbolic links.</p>
+<p>If you do not set the <code>CASC_JENKINS_CONFIG</code> environment variable, the plugin will
+default to looking for a single config file in <code>$JENKINS_ROOT/jenkins.yaml</code>.</p>
+<p>If everything was setup correctly, you should now be able to browse the Configuration as Code page with <code>Manage Jenkins</code> -&gt; <code>Configuration as Code</code>.</p>
+<h2><a id="user-content-run-locally" class="anchor" aria-hidden="true" href="#run-locally"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Run Locally</h2>
+<p>Prerequisites: <em>Java</em>, <em>Maven</em> &amp; <em>IntelliJ IDEA</em></p>
+<ul>
+<li>
+<p>Ensure Java 8 is available. There are unresolved issues with Java 10/11 as of October 24, 2018.</p>
+<div class="highlight highlight-source-shell"><pre>/usr/libexec/java_home</pre></div>
+<pre lang="text"><code>/Library/Java/JavaVirtualMachines/jdk-11.0.1.jdk/Contents/Home
+</code></pre>
+<ul>
+<li>If Java 11 is selected by default, check other available Java version below.</li>
+</ul>
+<div class="highlight highlight-source-shell"><pre>/usr/libexec/java_home --verbose</pre></div>
+<pre lang="text"><code>Matching Java Virtual Machines (3):
+    11.0.1, x86_64: "Java SE 11.0.1"  /Library/Java/JavaVirtualMachines/jdk-11.0.1.jdk/Contents/Home
+    10.0.2, x86_64: "Java SE 10.0.2"  /Library/Java/JavaVirtualMachines/jdk-10.0.2.jdk/Contents/Home
+    1.8.0_192, x86_64:  "Java SE 8"  /Library/Java/JavaVirtualMachines/jdk1.8.0_192.jdk/Contents/Home
+
+/Library/Java/JavaVirtualMachines/jdk-11.0.1.jdk/Contents/Home
+</code></pre>
+<ul>
+<li>Use the alternate Java 8.</li>
+</ul>
+<div class="highlight highlight-source-shell"><pre><span class="pl-k">export</span> JAVA_HOME=<span class="pl-s"><span class="pl-pds">`</span>/usr/libexec/java_home -v 1.8<span class="pl-pds">`</span></span>
+<span class="pl-c1">echo</span> <span class="pl-smi">$JAVA_HOME</span></pre></div>
+<pre lang="text"><code>/Library/Java/JavaVirtualMachines/jdk1.8.0_192.jdk/Contents/Home
+</code></pre>
+</li>
+<li>
+<p>Ensure Maven is included in the PATH environment variable.</p>
+<div class="highlight highlight-source-shell"><pre><span class="pl-k">export</span> PATH=<span class="pl-smi">$PATH</span>:/path/to/apache-maven-x.y.z/bin</pre></div>
+</li>
+</ul>
+<h3><a id="user-content-intellij-idea" class="anchor" aria-hidden="true" href="#intellij-idea"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>IntelliJ IDEA</h3>
+<ul>
+<li>Open the root directory of this project in IntelliJ IDEA.</li>
+<li>If you are opening the first time, wait patiently while project dependencies are being downloaded.</li>
+<li>Click <code>Run</code> in the menu. Select <code>Edit Configurations</code> in the menu item.</li>
+<li>Click <code>Add New Configuration</code> (<code>+</code>) in the top left of the shown dialog. Select <code>Maven</code>.</li>
+<li>Under <code>Parameters</code> tab group, <code>Working directory:</code> is <code>/path/to/configuration-as-code-plugin/plugin</code>.</li>
+<li>Under <code>Parameters</code> tab group, <code>Command line:</code> is <code>hpi:run</code>.</li>
+<li>Verify that IntelliJ IDEA is not using bundled maven.
+<ul>
+<li>Click <code>File</code> -&gt; <code>Preferences...</code> -&gt; <code>Build, Execution, Deployment</code> -&gt; <code>Build Tools</code> -&gt; <code>Maven</code>.</li>
+<li><code>Maven home directory:</code> has <code>/path/to/apache-maven-x.y.z</code> value, not <code>Bundled (Maven 3)</code>.</li>
+</ul>
+</li>
+<li>Open <a href="http://localhost:8080/jenkins/configuration-as-code/" rel="nofollow">http://localhost:8080/jenkins/configuration-as-code/</a> to test the plugin locally.</li>
+</ul>
+<h3><a id="user-content-cli" class="anchor" aria-hidden="true" href="#cli"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>CLI</h3>
+<ul>
+<li>Go into the <code>plugin</code> child directory under the root directory of this project.</li>
+<li>Use the below commands.</li>
+</ul>
+<div class="highlight highlight-source-shell"><pre><span class="pl-k">export</span> JAVA_HOME=<span class="pl-s"><span class="pl-pds">`</span>/usr/libexec/java_home -v 1.8<span class="pl-pds">`</span></span>
+<span class="pl-k">export</span> PATH=<span class="pl-smi">$PATH</span>:/path/to/apache-maven-x.y.z/bin
+mvn hpi:run</pre></div>
+<pre lang="text"><code>...
+INFO: Jenkins is fully up and running
+</code></pre>
+<ul>
+<li>Open <a href="http://localhost:8080/jenkins/configuration-as-code/" rel="nofollow">http://localhost:8080/jenkins/configuration-as-code/</a> to test the plugin locally.</li>
+</ul>
+<h2><a id="user-content-initial-configuration" class="anchor" aria-hidden="true" href="#initial-configuration"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Initial Configuration</h2>
+<p>When configuring the first Jenkins instance, browse the examples shown in the <a href="demos">demos</a>
+directory of this repository. If you have a plugin that does not have an example, consult the reference
+help document. Click the <code>Documentation</code> link at the bottom of the Configuration as Code page.</p>
+<p><a target="_blank" rel="noopener noreferrer" href="images/reference.png"><img src="images/reference.png" alt="Reference Page" style="max-width:100%;"></a></p>
+<p>If you want to configure a specific plugin, search the page for the name of the plugin. The page will
+show you which root element belongs to the configuration. Most installed plugins belong under the <code>unclassified</code> root
+element.</p>
+<p><a target="_blank" rel="noopener noreferrer" href="images/unclassified.png"><img src="images/unclassified.png" alt="Unclassified Section" style="max-width:100%;"></a></p>
+<h2><a id="user-content-examples" class="anchor" aria-hidden="true" href="#examples"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Examples</h2>
+<p>This configuration file includes root entries for various components of your primary Jenkins installation. The <code>jenkins</code> one is for the root Jenkins object, and other ones are for various global configuration elements.</p>
+<div class="highlight highlight-source-yaml"><pre><span class="pl-ent">jenkins</span>:
+  <span class="pl-ent">securityRealm</span>:
+    <span class="pl-ent">ldap</span>:
+      <span class="pl-ent">configurations</span>:
+        - <span class="pl-ent">groupMembershipStrategy</span>:
+            <span class="pl-ent">fromUserRecord</span>:
+              <span class="pl-ent">attributeName</span>: <span class="pl-s"><span class="pl-pds">"</span>memberOf<span class="pl-pds">"</span></span>
+          <span class="pl-ent">inhibitInferRootDN</span>: <span class="pl-c1">false</span>
+          <span class="pl-ent">rootDN</span>: <span class="pl-s"><span class="pl-pds">"</span>dc=acme,dc=org<span class="pl-pds">"</span></span>
+          <span class="pl-ent">server</span>: <span class="pl-s"><span class="pl-pds">"</span>ldaps://ldap.acme.org:1636<span class="pl-pds">"</span></span>
+
+  <span class="pl-ent">nodes</span>:
+    - <span class="pl-ent">permanent</span>:
+        <span class="pl-ent">name</span>: <span class="pl-s"><span class="pl-pds">"</span>static-agent<span class="pl-pds">"</span></span>
+        <span class="pl-ent">remoteFS</span>: <span class="pl-s"><span class="pl-pds">"</span>/home/jenkins<span class="pl-pds">"</span></span>
+        <span class="pl-ent">launcher</span>:
+          <span class="pl-ent">jnlp</span>:
+
+  <span class="pl-ent">slaveAgentPort</span>: <span class="pl-c1">50000</span>
+  <span class="pl-ent">agentProtocols</span>:
+    - <span class="pl-s"><span class="pl-pds">"</span>jnlp2<span class="pl-pds">"</span></span>
+<span class="pl-ent">tool</span>:
+  <span class="pl-ent">git</span>:
+    <span class="pl-ent">installations</span>:
+      - <span class="pl-ent">name</span>: <span class="pl-s">git</span>
+        <span class="pl-ent">home</span>: <span class="pl-s">/usr/local/bin/git</span>
+<span class="pl-ent">unclassified</span>:
+  <span class="pl-ent">mailer</span>:
+    <span class="pl-ent">adminAddress</span>: <span class="pl-s">admin@acme.org</span>
+    <span class="pl-ent">replyToAddress</span>: <span class="pl-s">do-not-reply@acme.org</span>
+    <span class="pl-c"><span class="pl-c">#</span> Note that this does not work right now</span>
+    <span class="pl-c"><span class="pl-c">#</span>smtpHost: smtp.acme.org</span>
+    <span class="pl-ent">smtpPort</span>: <span class="pl-c1">4441</span>
+<span class="pl-ent">credentials</span>:
+  <span class="pl-ent">system</span>:
+    <span class="pl-ent">domainCredentials</span>:
+      <span class="pl-ent">credentials</span>:
+        - <span class="pl-ent">certificate</span>:
+            <span class="pl-ent">scope</span>: <span class="pl-s">SYSTEM</span>
+            <span class="pl-ent">id</span>: <span class="pl-s">ssh_private_key</span>
+            <span class="pl-ent">keyStoreSource</span>:
+              <span class="pl-ent">fileOnMaster</span>:
+                <span class="pl-ent">keyStoreFile</span>: <span class="pl-s">/docker/secret/id_rsa</span></pre></div>
+<p>Also see <a href="demos">demos</a> folder with various samples.</p>
+<h2><a id="user-content-documentation" class="anchor" aria-hidden="true" href="#documentation"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Documentation</h2>
+<p>The configuration file format depends on the version of jenkins-core and installed plugins.
+Documentation is generated from a live instance, as well as a JSON schema you can use to validate configuration file
+with your favourite YAML tools.</p>
+<h2><a id="user-content-handling-secrets" class="anchor" aria-hidden="true" href="#handling-secrets"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Handling Secrets</h2>
+<p>Currently, you can provide initial secrets to JCasC that all rely on &lt;key,value&gt;
+substitution of strings in the configuration. For example, <code>Jenkins: "${some_var}"</code>. Default variable substitution
+using the <code>:-</code> operator from <code>bash</code> is also available. For example, <code>key: "${VALUE:-defaultvalue}"</code> will evaluate to <code>defaultvalue</code> if <code>$VALUE</code> is unset. To escape a string from secret interpolation, put <code>^</code> in front of the value. For example, <code>Jenkins: "^${some_var}"</code> will produce the literal <code>Jenkins: "${some_var}"</code>.</p>
+<h2><a id="user-content-secret-sources" class="anchor" aria-hidden="true" href="#secret-sources"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Secret sources</h2>
+<p>We can provide these initial secrets in the following ways:</p>
+<ul>
+<li>Using environment variables.</li>
+<li>Using docker-secrets, where files on path <code>/run/secrets/${KEY}</code> will be replaced by <code>${KEY}</code> in the configuration. The base folder <code>/run/secrets</code> can be overridden by setting the environment variable <code>SECRETS</code>. So this can be used as a file based secret, and not just docker secrets.</li>
+<li>Using Kubernetes secrets, logic is the same as for docker-secrets. The secret needs to be mounted as a file to <code>/run/secrets/</code>, and then the filename can be used as the KEY. For example:</li>
+</ul>
+<div class="highlight highlight-source-yaml"><pre><span class="pl-ent">apiVersion</span>: <span class="pl-c1">v1</span>
+<span class="pl-ent">kind</span>: <span class="pl-s">Secret</span>
+<span class="pl-ent">metadata</span>:
+  <span class="pl-ent">name</span>: <span class="pl-s">secret-name</span>
+<span class="pl-ent">data</span>:
+  <span class="pl-ent">filename</span>: <span class="pl-s">{{ "encoded string" | b64enc }}</span></pre></div>
+<p>can be used as:</p>
+<div class="highlight highlight-source-yaml"><pre>- <span class="pl-ent">credentials</span>:
+    - <span class="pl-ent">string</span>:
+      <span class="pl-ent">id</span>: <span class="pl-s"><span class="pl-pds">"</span>cred-id<span class="pl-pds">"</span></span>
+      <span class="pl-ent">secret</span>: <span class="pl-s">${filename}</span></pre></div>
+<ul>
+<li>Using Vault, see below.</li>
+</ul>
+<h3><a id="user-content-security-and-compatibility-considerations" class="anchor" aria-hidden="true" href="#security-and-compatibility-considerations"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Security and compatibility considerations</h3>
+
+<p>Jenkins configurations might include property definitions,
+e.g. for Token Macro resolution in Mail Ext Plugin.
+Such properties are not supposed to be resolved when importing configurations,
+but the JCasC plugin has no way to determine which variables should be resolved when reading the configurations.</p>
+<p>In some cases non-admin users can contribute to JCasC exports if they have some permissions
+(e.g. agent/view configuration or credentials management),
+and they could potentially inject variable expressions in plain text fields like descriptions
+and then see the resolved secrets in Jenkins Web UI if the Jenkins admin exports and imports the configuration without checking contents.
+It led to a security vulnerability which was addressed in JCasC <code>1.25</code> (SECURITY-1446).</p>
+<ul>
+<li>When reading configuration YAMLs, JCasC plugin will try to resolve
+<strong>all</strong> variables having the <code>${VARNAME}</code> format.</li>
+<li>Starting from JCasC <code>1.25</code>, JCasC export escapes the internal variable expressions,
+e.g. as <code>^${VARNAME}</code>, so newly exported and then imported configurations are
+are not subject for this risk</li>
+<li>For previously exported configurations, Jenkins admins are expected to manually
+resolve the issues by putting the escape symbol <code>^</code> in front of variables which should not be resolved</li>
+</ul>
+<h3><a id="user-content-vault" class="anchor" aria-hidden="true" href="#vault"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Vault</h3>
+<p>Prerequisites: <a href="https://github.com/jenkinsci/hashicorp-vault-plugin">HashiCorp Vault plugin</a> v2.4.0+</p>
+<ul>
+<li>The environment variable <code>CASC_VAULT_PW</code> must be present, if token is not used and appRole/Secret is not used. (Vault password.)</li>
+<li>The environment variable <code>CASC_VAULT_USER</code> must be present, if token is not used and appRole/Secret is not used. (Vault username.)</li>
+<li>The environment variable <code>CASC_VAULT_APPROLE</code> must be present, if token is not used and U/P not used. (Vault AppRole ID.)</li>
+<li>The environment variable <code>CASC_VAULT_APPROLE_SECRET</code> must be present, it token is not used and U/P not used. (Vault AppRole Secret ID.)</li>
+<li>The environment variable <code>CASC_VAULT_TOKEN</code> must be present, if U/P is not used. (Vault token.)</li>
+<li>The environment variable <code>CASC_VAULT_PATHS</code> must be present. (Comma separated vault key paths. For example, <code>secret/jenkins,secret/admin</code>.)</li>
+<li>The environment variable <code>CASC_VAULT_URL</code> must be present. (Vault url, including port number.)</li>
+<li>The environment variable <code>CASC_VAULT_MOUNT</code> is optional. (Vault auth mount. For example, <code>ldap</code> or another username &amp; password authentication type, defaults to <code>userpass</code>.)</li>
+<li>The environment variable <code>CASC_VAULT_NAMESPACE</code> is optional. If used, sets the Vault namespace for Enterprise Vaults.</li>
+<li>The environment variable <code>CASC_VAULT_FILE</code> is optional, provides a way for the other variables to be read from a file instead of environment variables.</li>
+<li>The environment variable <code>CASC_VAULT_ENGINE_VERSION</code> is optional. If unset, your vault path is assumed to be using kv version 2. If your vault path uses engine version 1, set this variable to <code>1</code>.</li>
+<li>The issued token should have read access to vault path <code>auth/token/lookup-self</code> in order to determine its expiration time. JCasC will re-issue a token if its expiration is reached (except for <code>CASC_VAULT_TOKEN</code>).</li>
+</ul>
+<p>If the environment variables <code>CASC_VAULT_URL</code> and <code>CASC_VAULT_PATHS</code> are present, JCasC will try to gather initial secrets from Vault. However for it to work properly there is a need for authentication by either the combination of <code>CASC_VAULT_USER</code> and <code>CASC_VAULT_PW</code>, a <code>CASC_VAULT_TOKEN</code>, or the combination of <code>CASC_VAULT_APPROLE</code> and <code>CASC_VAULT_APPROLE_SECRET</code>. The authenticated user must have at least read access.</p>
+<p>You can also provide a <code>CASC_VAULT_FILE</code> environment variable where you load the secrets from a file.</p>
+<p>File should be in a Java Properties format</p>
+<div class="highlight highlight-source-ini"><pre><span class="pl-k">CASC_VAULT_PW</span>=PASSWORD
+<span class="pl-k">CASC_VAULT_USER</span>=USER
+<span class="pl-k">CASC_VAULT_TOKEN</span>=TOKEN
+<span class="pl-k">CASC_VAULT_PATHS</span>=secret/jenkins/master,secret/admin
+<span class="pl-k">CASC_VAULT_URL</span>=https://vault.dot.com
+<span class="pl-k">CASC_VAULT_MOUNT</span>=ldap</pre></div>
+<p>A good use for <code>CASC_VAULT_FILE</code> would be together with docker secrets.</p>
+<div class="highlight highlight-source-yaml"><pre><span class="pl-ent">version</span>: <span class="pl-s"><span class="pl-pds">"</span>3.6<span class="pl-pds">"</span></span>
+
+<span class="pl-ent">services</span>:
+  <span class="pl-ent">jenkins</span>:
+    <span class="pl-ent">environment</span>:
+      <span class="pl-ent">CASC_VAULT_FILE</span>: <span class="pl-s">/run/secrets/jcasc_vault</span>
+    <span class="pl-ent">restart</span>: <span class="pl-s">always</span>
+    <span class="pl-ent">build</span>: <span class="pl-s">.</span>
+    <span class="pl-ent">image</span>: <span class="pl-s">jenkins.master:v1.0</span>
+    <span class="pl-ent">ports</span>:
+      - <span class="pl-c1">8080:8080</span>
+      - <span class="pl-c1">50000:50000</span>
+    <span class="pl-ent">volumes</span>:
+      - <span class="pl-s">jenkins-home:/var/jenkins_home</span>
+    <span class="pl-ent">secrets</span>:
+      - <span class="pl-s">jcasc_vault</span>
+
+<span class="pl-ent">volumes</span>:
+  <span class="pl-ent">jenkins-home</span>:
+
+<span class="pl-ent">secrets</span>:
+  <span class="pl-ent">jcasc_vault</span>:
+    <span class="pl-ent">file</span>: <span class="pl-s">./secrets/jcasc_vault</span></pre></div>
+<p><strong>TODO</strong>: Provide a Dockerfile to generate documentation from specified jenkins-core release and plugins.</p>
+<h2><a id="user-content-installing-plugins" class="anchor" aria-hidden="true" href="#installing-plugins"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Installing plugins</h2>
+<p>We don't support installing plugins with JCasC you need to use something else for this,</p>
+<p>Dockers users can use:<br>
+<a href="https://github.com/jenkinsci/docker/#preinstalling-plugins">https://github.com/jenkinsci/docker/#preinstalling-plugins</a></p>
+<p>Kubernetes users:<br>
+<a href="https://github.com/helm/charts/tree/master/stable/jenkins">https://github.com/helm/charts/tree/master/stable/jenkins</a></p>
+<h2><a id="user-content-supported-plugins" class="anchor" aria-hidden="true" href="#supported-plugins"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Supported Plugins</h2>
+<p>Most plugins should be supported out-of-the-box, or maybe require some minimal changes. See this <a href="https://issues.jenkins.io/secure/Dashboard.jspa?selectPageId=18341" rel="nofollow">dashboard</a> for known compatibility issues.</p>
+<h2><a id="user-content-triggering-configuration-reload" class="anchor" aria-hidden="true" href="#triggering-configuration-reload"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Triggering Configuration Reload</h2>
+<p>You have the following option to trigger a configuration reload:</p>
+<ul>
+<li>
+<p>via the user interface: <code>Manage Jenkins -&gt; Configuration -&gt; Reload existing configuration</code></p>
+</li>
+<li>
+<p>via http POST to <code>JENKINS_URL/configuration-as-code/reload</code>
+Note: this needs to include a valid CRUMB and authentication information e.g. username + token of a user with admin
+permissions. Since Jenkins 2.96 CRUMB is not needed for API tokens.</p>
+</li>
+<li>
+<p>via Jenkins CLI</p>
+</li>
+<li>
+<p>via http POST to <code>JENKINS_URL/reload-configuration-as-code</code>
+It's disabled by default and secured via a token configured as system property <code>casc.reload.token</code>.
+Setting the system property enables this functionality and the requests need to include the token as
+query parameter named <code>casc-reload-token</code>, i.e. <code>JENKINS_URL/reload-configuration-as-code/?casc-reload-token=32424324rdsadsa</code>.</p>
+<p><code>curl  -X POST "JENKINS_URL:8080/reload-configuration-as-code/?casc-reload-token=32424324rdsadsa"</code></p>
+</li>
+</ul>
+<h2><a id="user-content-configuration-as-code-extension-plugins" class="anchor" aria-hidden="true" href="#configuration-as-code-extension-plugins"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Configuration-as-Code extension plugins</h2>
+<ul>
+<li><a href="https://github.com/jenkinsci/configuration-as-code-groovy-plugin">configuration-as-code-groovy-plugin</a>
+Allows to specify groovy code that should run on during configuration.</li>
+<li><a href="https://github.com/jenkinsci/configuration-as-code-secret-ssm-plugin">configuration-as-code-secret-ssm-plugin</a>
+Allows to resolve secrets from AWS' SSM secrets</li>
+<li><a href="https://github.com/jenkinsci/hashicorp-vault-plugin">hashicorp-vault-plugin</a>
+Allows to resolve secrets from Hashicorp vault</li>
+</ul>
+<h2><a id="user-content-jenkins-enhancement-proposal" class="anchor" aria-hidden="true" href="#jenkins-enhancement-proposal"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Jenkins Enhancement Proposal</h2>
+<p>As configuration as code is demonstrated to be a highly requested topic in Jenkins community, we have published
+<a href="https://github.com/jenkinsci/jep/tree/master/jep/201">JEP 201</a> as proposal to make this a standard component
+of the Jenkins project. The proposal was accepted. <g-emoji class="g-emoji" alias="tada" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f389.png">🎉</g-emoji></p>
+</article></div>
