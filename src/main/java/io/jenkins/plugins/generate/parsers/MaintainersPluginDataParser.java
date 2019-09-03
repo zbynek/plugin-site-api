@@ -6,7 +6,6 @@ import io.jenkins.plugins.models.Plugin;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 

@@ -4,7 +4,6 @@ import io.jenkins.plugins.models.Plugin;
 import io.jenkins.plugins.services.DatastoreService;
 import io.jenkins.plugins.services.ServiceException;
 import io.jenkins.plugins.services.WikiService;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
