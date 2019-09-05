@@ -8,6 +8,7 @@ import io.jenkins.plugins.services.impl.WikiExtractor;
 
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matcher;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -18,6 +19,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 
 public class WikiServiceTest {
 
@@ -42,6 +44,12 @@ public class WikiServiceTest {
     final String url = "https://github.com/jenkinsci/labelled-steps-plugin";
     final String content = wikiService.getWikiContent(url);
     assertValidContent(content);
+    // heading inserted by plugin site, should be removed here
+    Assert.assertThat(content.toLowerCase(Locale.US),
+        CoreMatchers.not(CoreMatchers.containsString("<h1")));
+    // check removal of padding class that makes embedding hard
+    Assert.assertThat(content,
+        CoreMatchers.not(CoreMatchers.containsString(GithubExtractor.BOOTSTRAP_PADDING_5)));
   }
 
   @Test
@@ -183,9 +191,15 @@ public class WikiServiceTest {
 
   private void assertValidContent(String content) {
     Assert.assertNotNull("Wiki content is null", content);
+    Assert.assertThat(content, isValidUnicode());
     Assert.assertThat(content, CoreMatchers.not(CoreMatchers.containsString(
         HttpClientWikiService.EXTERNAL_DOCUMENTATION_PREFIX)));
     Assert.assertFalse("Wiki content is empty", content.isEmpty());
+  }
+
+  private Matcher<String> isValidUnicode() {
+    return CoreMatchers.not(CoreMatchers.containsString(
+        "\u00c2"));
   }
 
 }
