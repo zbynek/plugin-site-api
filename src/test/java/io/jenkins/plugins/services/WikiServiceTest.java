@@ -19,6 +19,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 
 public class WikiServiceTest {
 
@@ -43,6 +44,12 @@ public class WikiServiceTest {
     final String url = "https://github.com/jenkinsci/labelled-steps-plugin";
     final String content = wikiService.getWikiContent(url);
     assertValidContent(content);
+    // heading inserted by plugin site, should be removed here
+    Assert.assertThat(content.toLowerCase(Locale.US),
+        CoreMatchers.not(CoreMatchers.containsString("<h1")));
+    // check removal of padding class that makes embedding hard
+    Assert.assertThat(content,
+        CoreMatchers.not(CoreMatchers.containsString(GithubExtractor.BOOTSTRAP_PADDING_5)));
   }
 
   @Test

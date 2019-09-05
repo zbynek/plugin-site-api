@@ -13,8 +13,14 @@ import org.apache.http.message.BasicHeader;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 public class GithubExtractor implements WikiExtractor {
+  /**
+   * Bootstrap class setting !important padding. Scrapped by extractor
+   * to avoid !important override.
+   */
+  public static final String BOOTSTRAP_PADDING_5 = "p-5";
 
   private static final String README_ENDPOINT = "https://api.github.com/repos/jenkinsci/%s/readme?client_id=%s&client_secret=%s";
   private static final Pattern REPO_PATTERN = Pattern
@@ -61,7 +67,11 @@ public class GithubExtractor implements WikiExtractor {
   private void convertLinksToAbsolute(HttpClientWikiService service, Element wikiContent, String orgName, String repoName, String branch) {
     String documentationHost = String.format("https://github.com/%s/%s/blob/%s", orgName, repoName, branch);
     String imageHost = String.format("https://cdn.jsdelivr.net/gh/%s/%s@%s", orgName, repoName, branch);
-
+    Elements headings = wikiContent.getElementsByTag("H1");
+    if (headings.size() == 1) {
+      headings.get(0).remove();
+    }
+    wikiContent.getElementsByClass(BOOTSTRAP_PADDING_5).forEach(element -> element.removeClass(BOOTSTRAP_PADDING_5));
     // Relative hyperlinks, we resolve "/docs/rest-api.adoc" as https://github.com/jenkinsci/folder-auth-plugin/blob/master/docs/rest-api.adoc
     wikiContent.getElementsByAttribute("href").forEach(element -> service.replaceAttribute(element, "href", documentationHost, "/"));
     
