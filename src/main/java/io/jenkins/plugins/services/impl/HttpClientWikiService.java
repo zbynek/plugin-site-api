@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -108,7 +109,7 @@ public class HttpClientWikiService implements WikiService {
         final CloseableHttpResponse response = httpClient.execute(get)) {
       if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
         final HttpEntity entity = response.getEntity();
-        final String html = EntityUtils.toString(entity);
+        final String html = EntityUtils.toString(entity, StandardCharsets.UTF_8);
         EntityUtils.consume(entity);
         return html;
       } else {

@@ -8,6 +8,7 @@ import io.jenkins.plugins.services.impl.WikiExtractor;
 
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matcher;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -183,9 +184,15 @@ public class WikiServiceTest {
 
   private void assertValidContent(String content) {
     Assert.assertNotNull("Wiki content is null", content);
+    Assert.assertThat(content, isValidUnicode());
     Assert.assertThat(content, CoreMatchers.not(CoreMatchers.containsString(
         HttpClientWikiService.EXTERNAL_DOCUMENTATION_PREFIX)));
     Assert.assertFalse("Wiki content is empty", content.isEmpty());
+  }
+
+  private Matcher<String> isValidUnicode() {
+    return CoreMatchers.not(CoreMatchers.containsString(
+        "\u00c2"));
   }
 
 }
