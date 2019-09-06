@@ -249,8 +249,9 @@
   </build>
 
   <scm>
-    <developerConnection>scm:git:ssh://git@github.com/jenkins-infra/plugin-site.git</developerConnection>
-    <connection>scm:git:ssh://git@github.com/jenkins-infra/plugin-site.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/jenkins-infra/plugin-site-api.git</developerConnection>
+    <connection>scm:git:ssh://git@github.com/jenkins-infra/plugin-site-api.git</connection>
+    <url>https://github.com/jenkins-infra/plugin-site-api</url>
   </scm>
 
   <profiles>
