@@ -1,0 +1,44 @@
+package io.jenkins.plugins.services.impl;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class GithubReadmeExtractor extends GithubExtractor {
+
+  private static final String README_ENDPOINT = "https://api.github.com/repos/jenkinsci/%s/readme?client_id=%s&client_secret=%s";
+  private static final Pattern REPO_PATTERN = Pattern
+      .compile("https?://github.com/jenkinsci/([^/.]+)(\\.git)?/?$");
+
+  @Override
+  protected GithubMatcher getDelegate(String url) {
+    final Matcher matcher = REPO_PATTERN.matcher(url);
+    return new GithubMatcher() {
+
+      @Override
+      public String buildApiUrl(String clientId, String secret) {
+        return String.format(README_ENDPOINT, matcher.group(1), clientId, secret);
+      }
+
+      @Override
+      public String getDirectory() {
+        return "/";
+      }
+
+      @Override
+      public String getBranch() {
+        return "master";
+      }
+
+      @Override
+      public boolean find() {
+        return matcher.find();
+      }
+
+      @Override
+      public String getRepo() {
+        return matcher.group(1);
+      }}
+    ;
+  }
+
+}
