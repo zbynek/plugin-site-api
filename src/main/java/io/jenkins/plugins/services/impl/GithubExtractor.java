@@ -22,21 +22,6 @@ public abstract class GithubExtractor implements WikiExtractor {
   private static final Logger LOGGER = Logger.getLogger(GithubReadmeExtractor.class.getName());
 
   @Override
-  public String extractHtml(String apiContent, String url, HttpClientWikiService service) {
-    GithubMatcher matcher = getDelegate(url);
-    if (!matcher.find()) {
-      throw new IllegalArgumentException("Invalid github URL" + url);
-    }
-    final Document html = Jsoup.parse(apiContent);
-    final Element mainDiv = html.getElementsByTag("body").get(0).child(0);
-    //TODO(oleg_nenashev): Support organization and branch customization?
-    convertLinksToAbsolute(service, mainDiv, "jenkinsci", matcher);
-    return mainDiv.toString();
-  }
-
-  protected abstract GithubMatcher getDelegate(String url);
-
-  @Override
   public String getApiUrl(String wikiUrl) {
     GithubMatcher matcher = getDelegate(wikiUrl);
     if (!matcher.find()) {
@@ -52,12 +37,17 @@ public abstract class GithubExtractor implements WikiExtractor {
     return matcher.buildApiUrl(clientId, System.getenv("GITHUB_SECRET"));
   }
 
-  private String getClientId() {
-    String clientId = StringUtils.trimToNull(System.getenv("GITHUB_CLIENT_ID"));
-    if (clientId != null) {
-      return clientId;
+  @Override
+  public String extractHtml(String apiContent, String url, HttpClientWikiService service) {
+    GithubMatcher matcher = getDelegate(url);
+    if (!matcher.find()) {
+      throw new IllegalArgumentException("Invalid github URL" + url);
     }
-    return StringUtils.trimToNull(System.getProperty("github.client.id"));
+    final Document html = Jsoup.parse(apiContent);
+    final Element mainDiv = html.getElementsByTag("body").get(0).child(0);
+    //TODO(oleg_nenashev): Support organization and branch customization?
+    convertLinksToAbsolute(service, mainDiv, "jenkinsci", matcher);
+    return mainDiv.toString();
   }
 
   @Override
@@ -65,6 +55,8 @@ public abstract class GithubExtractor implements WikiExtractor {
     Header header = new BasicHeader("Accept", "application/vnd.github.v3.html");
     return Collections.singletonList(header);
   }
+
+  protected abstract GithubMatcher getDelegate(String url);
 
   protected void convertLinksToAbsolute(HttpClientWikiService service, Element wikiContent, String orgName, GithubMatcher matcher) {
     String repoName = matcher.getRepo();
@@ -82,6 +74,14 @@ public abstract class GithubExtractor implements WikiExtractor {
     
     // Relative image inclusions, we resolve /docs/images/screenshot.png as https://cdn.jsdelivr.net/gh/jenkinsci/folder-auth-plugin@master/docs/images/screenshot.png
     wikiContent.getElementsByAttribute("src").forEach(element -> service.replaceAttribute(element, "src", imageHost, path));
+  }
+
+  private String getClientId() {
+    String clientId = StringUtils.trimToNull(System.getenv("GITHUB_CLIENT_ID"));
+    if (clientId != null) {
+      return clientId;
+    }
+    return StringUtils.trimToNull(System.getProperty("github.client.id"));
   }
 
 }
