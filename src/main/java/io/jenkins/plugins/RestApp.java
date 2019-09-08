@@ -49,6 +49,7 @@ public class RestApp extends ResourceConfig {
     });
 
     // Web tier
+    packages("io.swagger.jaxrs");
     packages("io.jenkins.plugins");
   }
 

@@ -5,6 +5,8 @@ import io.jenkins.plugins.services.DatastoreService;
 import io.jenkins.plugins.services.SearchOptions;
 import io.jenkins.plugins.services.ServiceException;
 import io.jenkins.plugins.services.SortBy;
+import io.swagger.annotations.Api;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +19,7 @@ import java.util.Set;
 /**
  * <p>Endpoint for searching for plugins</p>
  */
+@Api
 @Path("/plugins")
 @Produces(MediaType.APPLICATION_JSON)
 public class PluginsEndpoint {

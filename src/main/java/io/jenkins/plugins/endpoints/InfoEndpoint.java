@@ -1,6 +1,8 @@
 package io.jenkins.plugins.endpoints;
 
 import io.jenkins.plugins.models.Info;
+import io.swagger.annotations.Api;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +19,7 @@ import java.util.Properties;
  *
  * <p>Used for label filtering</p>
  */
+@Api
 @Path("/info")
 @Produces(MediaType.APPLICATION_JSON)
 public class InfoEndpoint {

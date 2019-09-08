@@ -4,6 +4,8 @@ import io.jenkins.plugins.models.Plugin;
 import io.jenkins.plugins.services.DatastoreService;
 import io.jenkins.plugins.services.ServiceException;
 import io.jenkins.plugins.services.WikiService;
+import io.swagger.annotations.Api;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +20,7 @@ import javax.ws.rs.core.Response;
  * <p>The major difference here compared to <code>PluginsEndpoint</code> is the result includes (if available) the wiki
  * content from the Jenkins Wiki page.</p>
  */
+@Api
 @Path("/plugin/{name}")
 @Produces(MediaType.APPLICATION_JSON)
 public class PluginEndpoint {

@@ -2,6 +2,8 @@ package io.jenkins.plugins.endpoints;
 
 import io.jenkins.plugins.models.Labels;
 import io.jenkins.plugins.services.DatastoreService;
+import io.swagger.annotations.Api;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +20,7 @@ import javax.ws.rs.core.Response;
  *
  * <p>Used for label filtering</p>
  */
+@Api
 @Path("/labels")
 @Produces(MediaType.APPLICATION_JSON)
 public class LabelsEndpoint {

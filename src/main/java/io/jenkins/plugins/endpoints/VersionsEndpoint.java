@@ -2,6 +2,10 @@ package io.jenkins.plugins.endpoints;
 
 import io.jenkins.plugins.models.Versions;
 import io.jenkins.plugins.services.DatastoreService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.Info;
+import io.swagger.annotations.SwaggerDefinition;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +22,11 @@ import javax.ws.rs.core.Response;
  *
  * <p>Used for requiredCore filtering</p>
  */
+@Api
+@SwaggerDefinition(basePath="/api", host="plugins.jenkins.io",
+  info = @Info(title="Jenkins plugin site",version="1.7.0"),
+  schemes = {SwaggerDefinition.Scheme.HTTPS},
+  produces = {"application/json"})
 @Path("/versions")
 @Produces(MediaType.APPLICATION_JSON)
 public class VersionsEndpoint {
