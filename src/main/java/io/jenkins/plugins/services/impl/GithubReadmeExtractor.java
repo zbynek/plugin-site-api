@@ -24,7 +24,8 @@ public class GithubReadmeExtractor extends GithubExtractor {
 
     @Override
     public String getBranch() {
-      return "master";
+      String branch = matcher.group(3);
+      return branch == null ? "master" : branch;
     }
 
     @Override
@@ -40,7 +41,7 @@ public class GithubReadmeExtractor extends GithubExtractor {
 
   private static final String README_ENDPOINT = "https://api.github.com/repos/jenkinsci/%s/readme?client_id=%s&client_secret=%s";
   private static final Pattern REPO_PATTERN = Pattern
-      .compile("https?://github.com/jenkinsci/([^/.]+)(\\.git)?/?$");
+      .compile("https?://github.com/jenkinsci/([^/.]+)(\\.git|/tree/([^/]+))?/?$");
 
   @Override
   protected GithubMatcher getDelegate(String url) {

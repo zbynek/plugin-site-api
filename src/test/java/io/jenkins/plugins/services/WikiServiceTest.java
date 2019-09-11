@@ -44,7 +44,12 @@ public class WikiServiceTest {
   public void testGetWikiContentGitReadme() {
     testGetWikiContentGit("https://github.com/jenkinsci/labelled-steps-plugin");
   }
-  
+
+  @Test
+  public void testGetWikiContentGitReadmeBranch() {
+    testGetWikiContentGit("https://github.com/jenkinsci/configuration-as-code-plugin/tree/configuration-as-code-1.30");
+  }
+
   @Test 
   public void testGetWikiContentGitCustom() {
     testGetWikiContentGit("https://github.com/jenkinsci/credentials-plugin/blob/credentials-2.3.0/docs/README.adoc");
