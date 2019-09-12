@@ -13,8 +13,8 @@ public class GithubReadmeExtractor extends GithubExtractor {
     }
 
     @Override
-    public String buildApiUrl(String clientId, String secret) {
-      return String.format(README_ENDPOINT, matcher.group(1), clientId, secret);
+    public String getEndpoint() {
+      return README_ENDPOINT;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class GithubReadmeExtractor extends GithubExtractor {
     }
   }
 
-  private static final String README_ENDPOINT = "https://api.github.com/repos/jenkinsci/%s/readme?client_id=%s&client_secret=%s";
+  private static final String README_ENDPOINT = "readme";
   private static final Pattern REPO_PATTERN = Pattern
       .compile("https?://github.com/jenkinsci/([^/.]+)(\\.git|/tree/([^/]+))?/?$");
 

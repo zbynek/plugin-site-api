@@ -5,11 +5,9 @@ package io.jenkins.plugins.services.impl;
  */
 public interface GithubMatcher {
   /**
-   * @param clientId GitHub app client ID
-   * @param secret GitHub app secret
-   * @return API url to get content of the browser URL as HTML
+   * @return per-repository API endpoint, without leading slash
    */
-  String buildApiUrl(String clientId, String secret);
+  String getEndpoint();
 
   /**
    * @return directory within repo, including trailing slash

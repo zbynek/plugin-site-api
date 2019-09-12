@@ -20,6 +20,8 @@ public abstract class GithubExtractor implements WikiExtractor {
    */
   public static final String BOOTSTRAP_PADDING_5 = "p-5";
   private static final Logger LOGGER = Logger.getLogger(GithubReadmeExtractor.class.getName());
+  private static final String API_URL_PATTERN = 
+      "https://api.github.com/repos/jenkinsci/%s/%s?ref=%s&client_id=%s&client_secret=%s";
 
   @Override
   public String getApiUrl(String wikiUrl) {
@@ -34,7 +36,8 @@ public abstract class GithubExtractor implements WikiExtractor {
       return null;
     }
 
-    return matcher.buildApiUrl(clientId, System.getenv("GITHUB_SECRET"));
+    return String.format(API_URL_PATTERN, matcher.getRepo(),
+        matcher.getEndpoint(), matcher.getBranch(), clientId, System.getenv("GITHUB_SECRET"));
   }
 
   @Override

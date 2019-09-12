@@ -12,9 +12,8 @@ public class GithubContentsExtractor extends GithubExtractor {
     }
 
     @Override
-    public String buildApiUrl( String clientId, String secret) {
-      return String.format(CONTENTS_ENDPOINT, 
-          matcher.group(1), matcher.group(3), matcher.group(2), clientId, secret);
+    public String getEndpoint() {
+      return String.format(CONTENTS_ENDPOINT, matcher.group(3));
     }
 
     @Override
@@ -42,8 +41,7 @@ public class GithubContentsExtractor extends GithubExtractor {
   private static final Pattern REPO_PATTERN = Pattern
       .compile("https?://github.com/jenkinsci/([^/.]+)/blob/([^/]+)/(.+\\.(md|adoc))$");
   
-  private static final String CONTENTS_ENDPOINT = 
-      "https://api.github.com/repos/jenkinsci/%s/contents/%s?ref=%s&client_id=%s&client_secret=%s";
+  private static final String CONTENTS_ENDPOINT = "contents/%s";
 
   @Override
   protected GithubMatcher getDelegate(String url) {
