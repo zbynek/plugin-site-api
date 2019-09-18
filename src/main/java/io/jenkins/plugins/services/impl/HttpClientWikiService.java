@@ -48,7 +48,8 @@ public class HttpClientWikiService implements WikiService {
   static {
       WIKI_URLS.add(new ConfluenceApiExtractor());
       WIKI_URLS.add(new ConfluenceDirectExtractor());
-      WIKI_URLS.add(new GithubExtractor());
+      WIKI_URLS.add(new GithubReadmeExtractor());
+      WIKI_URLS.add(new GithubContentsExtractor());
   }
 
   @PostConstruct

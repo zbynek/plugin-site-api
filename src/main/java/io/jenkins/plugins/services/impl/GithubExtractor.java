@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
@@ -15,21 +13,19 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class GithubExtractor implements WikiExtractor {
+public abstract class GithubExtractor implements WikiExtractor {
   /**
    * Bootstrap class setting !important padding. Scrapped by extractor
    * to avoid !important override.
    */
   public static final String BOOTSTRAP_PADDING_5 = "p-5";
-
-  private static final String README_ENDPOINT = "https://api.github.com/repos/jenkinsci/%s/readme?client_id=%s&client_secret=%s";
-  private static final Pattern REPO_PATTERN = Pattern
-      .compile("https?://github.com/jenkinsci/([^/.]+)(\\.git)?(/|/blob/master/README\\.md)?$");
-  private static final Logger LOGGER = Logger.getLogger(GithubExtractor.class.getName());
+  private static final Logger LOGGER = Logger.getLogger(GithubReadmeExtractor.class.getName());
+  private static final String API_URL_PATTERN = 
+      "https://api.github.com/repos/jenkinsci/%s/%s?ref=%s&client_id=%s&client_secret=%s";
 
   @Override
   public String getApiUrl(String wikiUrl) {
-    Matcher matcher = REPO_PATTERN.matcher(wikiUrl);
+    GithubMatcher matcher = getDelegate(wikiUrl);
     if (!matcher.find()) {
       return null;
     }
@@ -40,31 +36,35 @@ public class GithubExtractor implements WikiExtractor {
       return null;
     }
 
-    return String.format(README_ENDPOINT, matcher.group(1), clientId, System.getenv("GITHUB_SECRET"));
-  }
-
-  private String getClientId() {
-    String clientId = StringUtils.trimToNull(System.getenv("GITHUB_CLIENT_ID"));
-    if (clientId != null) {
-      return clientId;
-    }
-    return StringUtils.trimToNull(System.getProperty("github.client.id"));
+    return String.format(API_URL_PATTERN, matcher.getRepo(),
+        matcher.getEndpoint(), matcher.getBranch(), clientId, System.getenv("GITHUB_SECRET"));
   }
 
   @Override
   public String extractHtml(String apiContent, String url, HttpClientWikiService service) {
-    Matcher matcher = REPO_PATTERN.matcher(url);
+    GithubMatcher matcher = getDelegate(url);
     if (!matcher.find()) {
       throw new IllegalArgumentException("Invalid github URL" + url);
     }
     final Document html = Jsoup.parse(apiContent);
     final Element mainDiv = html.getElementsByTag("body").get(0).child(0);
     //TODO(oleg_nenashev): Support organization and branch customization?
-    convertLinksToAbsolute(service, mainDiv, "jenkinsci", matcher.group(1), "master");
+    convertLinksToAbsolute(service, mainDiv, "jenkinsci", matcher);
     return mainDiv.toString();
   }
 
-  private void convertLinksToAbsolute(HttpClientWikiService service, Element wikiContent, String orgName, String repoName, String branch) {
+  @Override
+  public List<Header> getHeaders() {
+    Header header = new BasicHeader("Accept", "application/vnd.github.v3.html");
+    return Collections.singletonList(header);
+  }
+
+  protected abstract GithubMatcher getDelegate(String url);
+
+  protected void convertLinksToAbsolute(HttpClientWikiService service, Element wikiContent, String orgName, GithubMatcher matcher) {
+    String repoName = matcher.getRepo();
+    String branch = matcher.getBranch();
+    String path = matcher.getDirectory();
     String documentationHost = String.format("https://github.com/%s/%s/blob/%s", orgName, repoName, branch);
     String imageHost = String.format("https://cdn.jsdelivr.net/gh/%s/%s@%s", orgName, repoName, branch);
     Elements headings = wikiContent.getElementsByTag("H1");
@@ -73,16 +73,18 @@ public class GithubExtractor implements WikiExtractor {
     }
     wikiContent.getElementsByClass(BOOTSTRAP_PADDING_5).forEach(element -> element.removeClass(BOOTSTRAP_PADDING_5));
     // Relative hyperlinks, we resolve "/docs/rest-api.adoc" as https://github.com/jenkinsci/folder-auth-plugin/blob/master/docs/rest-api.adoc
-    wikiContent.getElementsByAttribute("href").forEach(element -> service.replaceAttribute(element, "href", documentationHost, "/"));
+    wikiContent.getElementsByAttribute("href").forEach(element -> service.replaceAttribute(element, "href", documentationHost, path));
     
     // Relative image inclusions, we resolve /docs/images/screenshot.png as https://cdn.jsdelivr.net/gh/jenkinsci/folder-auth-plugin@master/docs/images/screenshot.png
-    wikiContent.getElementsByAttribute("src").forEach(element -> service.replaceAttribute(element, "src", imageHost, "/"));
+    wikiContent.getElementsByAttribute("src").forEach(element -> service.replaceAttribute(element, "src", imageHost, path));
   }
 
-  @Override
-  public List<Header> getHeaders() {
-    Header header = new BasicHeader("Accept", "application/vnd.github.v3.html");
-    return Collections.singletonList(header);
+  private String getClientId() {
+    String clientId = StringUtils.trimToNull(System.getenv("GITHUB_CLIENT_ID"));
+    if (clientId != null) {
+      return clientId;
+    }
+    return StringUtils.trimToNull(System.getProperty("github.client.id"));
   }
 
 }

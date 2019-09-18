@@ -2,12 +2,14 @@ package io.jenkins.plugins.services;
 
 import io.jenkins.plugins.services.impl.ConfluenceApiExtractor;
 import io.jenkins.plugins.services.impl.ConfluenceDirectExtractor;
-import io.jenkins.plugins.services.impl.GithubExtractor;
+import io.jenkins.plugins.services.impl.GithubContentsExtractor;
+import io.jenkins.plugins.services.impl.GithubReadmeExtractor;
 import io.jenkins.plugins.services.impl.HttpClientWikiService;
 import io.jenkins.plugins.services.impl.WikiExtractor;
 
 import org.apache.commons.io.FileUtils;
-import org.hamcrest.CoreMatchers;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
 import org.hamcrest.Matcher;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -39,17 +41,30 @@ public class WikiServiceTest {
   }
 
   @Test
-  public void testGetWikiContentGit() {
+  public void testGetWikiContentGitReadme() {
+    testGetWikiContentGit("https://github.com/jenkinsci/labelled-steps-plugin");
+  }
+
+  @Test
+  public void testGetWikiContentGitReadmeBranch() {
+    testGetWikiContentGit("https://github.com/jenkinsci/configuration-as-code-plugin/tree/configuration-as-code-1.30");
+  }
+
+  @Test 
+  public void testGetWikiContentGitCustom() {
+    testGetWikiContentGit("https://github.com/jenkinsci/credentials-plugin/blob/credentials-2.3.0/docs/README.adoc");
+  }
+
+  public void testGetWikiContentGit(String url) {
     System.setProperty("github.client.id", "dummy");
-    final String url = "https://github.com/jenkinsci/labelled-steps-plugin";
     final String content = wikiService.getWikiContent(url);
     assertValidContent(content);
     // heading inserted by plugin site, should be removed here
     Assert.assertThat(content.toLowerCase(Locale.US),
-        CoreMatchers.not(CoreMatchers.containsString("<h1")));
+        not(containsString("<h1")));
     // check removal of padding class that makes embedding hard
     Assert.assertThat(content,
-        CoreMatchers.not(CoreMatchers.containsString(GithubExtractor.BOOTSTRAP_PADDING_5)));
+        not(containsString(GithubReadmeExtractor.BOOTSTRAP_PADDING_5)));
   }
 
   @Test
@@ -84,22 +99,22 @@ public class WikiServiceTest {
     Assert.assertNotNull("Wiki content is null", cleanContent);
     assertAllLinksMatch(cleanContent, "https?://.*", "https://.*");
   }
-  
+
   @Test
   public void testCleanWikiContentGithub() throws IOException {
     final File file = new File("src/test/resources/github_content.html");
     final String content = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-    final String cleanContent = new GithubExtractor().extractHtml(content, 
+    final String cleanContent = new GithubReadmeExtractor().extractHtml(content, 
         "https://github.com/jenkinsci/configuration-as-code-plugin", wikiService);
     Assert.assertNotNull("Wiki content is null", cleanContent);
     assertAllLinksMatch(cleanContent, "(#|https?://).*", "https?://.*");
   }
-  
+
   @Test
   public void testCleanWikiExcerptGithub() throws IOException {
     final File file = new File("src/test/resources/github_excerpt.html");
     final String content = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-    final String cleanContent = new GithubExtractor().extractHtml(content, 
+    final String cleanContent = new GithubReadmeExtractor().extractHtml(content, 
         "https://github.com/jenkinsci/configuration-as-code-plugin", wikiService);
     Assert.assertNotNull("Wiki content is null", cleanContent);
     String hrefRegexp = "#getting-started|https://github.com/jenkinsci/configuration-as-code-plugin/blob/master/.*";
@@ -171,35 +186,46 @@ public class WikiServiceTest {
   }
 
   @Test
-  public void testGithubExtractor() {
+  public void testGithubReadmeExtractor() {
     System.setProperty("github.client.id", "dummy");
-    GithubExtractor githubApi = new GithubExtractor();
+    GithubReadmeExtractor githubApi = new GithubReadmeExtractor();
     assertValid(githubApi, "https://github.com/jenkinsci/xyz");
     assertValid(githubApi, "https://github.com/jenkinsci/xyz/");
     assertValid(githubApi, "http://github.com/jenkinsci/xyz.git");
     assertInvalid(githubApi, "https://github.com/other-org/repo");
     assertInvalid(githubApi, "https://github.com/jenkinsci/xyz/blob/file.md");
   }
+  
+  @Test
+  public void testGithubContentsExtractor() {
+    System.setProperty("github.client.id", "dummy");
+    GithubContentsExtractor githubApi = new GithubContentsExtractor();
+    assertValid(githubApi, "https://github.com/jenkinsci/xyz/blob/master/file.md");
+    assertValid(githubApi, "https://github.com/jenkinsci/xyz/blob/master/docs/file.md");
+    assertValid(githubApi, "https://github.com/jenkinsci/xyz/blob/v1.0/docs/file.md");
+    assertInvalid(githubApi, "https://github.com/jenkinsci/xyz/wiki");
+  }
 
   private void assertInvalid(WikiExtractor extractor, String string) {
-    Assert.assertNull(extractor.getApiUrl(string));
+    Assert.assertNull("Should not be matched by extractor: " + string,
+        extractor.getApiUrl(string));
   }
 
   private void assertValid(WikiExtractor extractor, String string) {
-    Assert.assertNotNull(extractor.getApiUrl(string));
+    Assert.assertNotNull("Should be matched by extractor: " + string,
+        extractor.getApiUrl(string));
   }
 
   private void assertValidContent(String content) {
     Assert.assertNotNull("Wiki content is null", content);
     Assert.assertThat(content, isValidUnicode());
-    Assert.assertThat(content, CoreMatchers.not(CoreMatchers.containsString(
+    Assert.assertThat(content, not(containsString(
         HttpClientWikiService.EXTERNAL_DOCUMENTATION_PREFIX)));
     Assert.assertFalse("Wiki content is empty", content.isEmpty());
   }
 
   private Matcher<String> isValidUnicode() {
-    return CoreMatchers.not(CoreMatchers.containsString(
-        "\u00c2"));
+    return not(containsString("\u00c2"));
   }
 
 }
