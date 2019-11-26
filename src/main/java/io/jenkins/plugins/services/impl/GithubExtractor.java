@@ -20,7 +20,7 @@ public abstract class GithubExtractor implements WikiExtractor {
    */
   public static final String BOOTSTRAP_PADDING_5 = "p-5";
   private static final Logger LOGGER = Logger.getLogger(GithubReadmeExtractor.class.getName());
-  private static final String API_URL_PATTERN = 
+  private static final String API_URL_PATTERN =
       "https://api.github.com/repos/jenkinsci/%s/%s?ref=%s&client_id=%s&client_secret=%s";
 
   @Override
@@ -67,14 +67,20 @@ public abstract class GithubExtractor implements WikiExtractor {
     String path = matcher.getDirectory();
     String documentationHost = String.format("https://github.com/%s/%s/blob/%s", orgName, repoName, branch);
     String imageHost = String.format("https://cdn.jsdelivr.net/gh/%s/%s@%s", orgName, repoName, branch);
-    Elements headings = wikiContent.getElementsByTag("H1");
-    if (headings.size() == 1) {
-      headings.get(0).remove();
+    Elements topLevelHeading = wikiContent.getElementsByTag("H1");
+    if (topLevelHeading.size() == 1) {
+      topLevelHeading.get(0).remove();
     }
+
+    wikiContent.select("h1, h2, h3, h4, h5, h6")
+      .stream()
+      .filter(element -> StringUtils.contains(element.id(), "user-content"))
+      .forEach(service::stripUserContentIdPrefix);
+
     wikiContent.getElementsByClass(BOOTSTRAP_PADDING_5).forEach(element -> element.removeClass(BOOTSTRAP_PADDING_5));
     // Relative hyperlinks, we resolve "/docs/rest-api.adoc" as https://github.com/jenkinsci/folder-auth-plugin/blob/master/docs/rest-api.adoc
     wikiContent.getElementsByAttribute("href").forEach(element -> service.replaceAttribute(element, "href", documentationHost, path));
-    
+
     // Relative image inclusions, we resolve /docs/images/screenshot.png as https://cdn.jsdelivr.net/gh/jenkinsci/folder-auth-plugin@master/docs/images/screenshot.png
     wikiContent.getElementsByAttribute("src").forEach(element -> service.replaceAttribute(element, "src", imageHost, path));
   }

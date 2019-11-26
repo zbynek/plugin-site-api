@@ -146,6 +146,16 @@ public class HttpClientWikiService implements WikiService {
     }
   }
 
+  /**
+   * GitHub adds user-content- to some html elements like links and headings, which breaks hyperlinking in ToCs
+   *
+   * @param element element to be processed
+   */
+  public void stripUserContentIdPrefix(Element element) {
+    final String attribute = element.attr("id");
+    element.attr("id", attribute.replace("user-content-", ""));
+  }
+
   public static String getNonWikiContent(String url) {
     final Element body = Jsoup.parseBodyFragment("<div></div>").body();
     final Element div = body.select("div").first();
