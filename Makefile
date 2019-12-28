@@ -1,6 +1,6 @@
 # Basic Makefile just to make creating containers a bit easier outside of
 # Jenkins itself (see also: Jenkinsfile)
-IMAGE_NAME=jenkinsciinfra/plugin-site
+IMAGE_NAME=jenkinsciinfra/plugin-site-api
 ARTIFACT=plugin-site-api-1.0-SNAPSHOT.war
 DATA_FILE=plugins.json.gzip
 
@@ -9,7 +9,7 @@ DATA_FILE=plugins.json.gzip
 #################
 all: check container
 
-container: plugindata target/$(ARTIFACT) deploy/plugin-site
+container: plugindata target/$(ARTIFACT)
 	docker build -t $(IMAGE_NAME) deploy
 
 plugindata: target/$(DATA_FILE)
@@ -26,7 +26,7 @@ clean:
 	docker-compose down || true
 	mvn -B clean
 	rm -f $(DATA_FILE)
-	rm -rf target deploy/plugin-site
+	rm -rf target
 	docker rmi $$(docker images -q -f "reference=$(IMAGE_NAME)") || true
 
 #################
@@ -39,9 +39,6 @@ target/plugins.json.gzip: pom.xml
 
 target/$(ARTIFACT): plugindata check
 	mvn -B -Dmaven.test.skip=true package
-
-deploy/plugin-site:
-	(cd deploy && git clone https://github.com/jenkins-infra/plugin-site.git)
 ###################
 
 .PHONY: all container plugindata check clean run

@@ -19,13 +19,6 @@ node('docker&&linux') {
         checkout scm
         sh 'git rev-parse HEAD > GIT_COMMIT'
         shortCommit = readFile('GIT_COMMIT').take(6)
-
-        dir('deploy/plugin-site') {
-            def branch = env.BRANCH_NAME != 'master' ? 'develop' : 'master'
-            echo 'Cloning the latest front-end site for baking our container'
-            git url: 'https://github.com/jenkins-infra/plugin-site.git', branch: branch
-            sh 'git rev-parse HEAD > GIT_COMMIT'
-        }
     }
 
     timestamps {
@@ -70,10 +63,10 @@ node('docker&&linux') {
              */
             def container
             stage('Containerize') {
-                container = docker.build("jenkinsciinfra/plugin-site:${env.BUILD_ID}-${shortCommit}",
+                container = docker.build("jenkinsciinfra/plugin-site-api:${env.BUILD_ID}-${shortCommit}",
                                         '--no-cache --rm deploy')
                 if (pushToDocker) {
-                    echo "Pushing container jenkinsciinfra/plugin-site:${env.BUILD_ID}-${shortCommit}"
+                    echo "Pushing container jenkinsciinfra/plugin-site-api:${env.BUILD_ID}-${shortCommit}"
                     infra.withDockerCredentials {
                         container.push()
                     }
@@ -97,7 +90,7 @@ node('docker&&linux') {
 
             stage('Tag container as latest') {
                 if (pushToDocker) {
-                    echo "Tagging jenkinsciinfra/plugin-site:${env.BUILD_ID}-${shortCommit} as latest"
+                    echo "Tagging jenkinsciinfra/plugin-site-api:${env.BUILD_ID}-${shortCommit} as latest"
                     infra.withDockerCredentials {
                         container.push('latest')
                     }
