@@ -45,7 +45,13 @@ node('docker&&linux') {
                         'DATA_FILE_URL=http://nginx/plugins.json.gzip',
                     ]) {
                         List<String> mvnOptions = ['-Dmaven.test.failure.ignore','verify']
-                        infra.runMaven(mvnOptions, /* jdk */ 8, /*extraEnv*/ null, /*settingsFile*/ null, /*addToolEnv*/ false)
+                        infra.runMaven(
+                            mvnOptions,
+                            /*jdk*/ "8",
+                            /*extraEnv*/ null,
+                            /*settingsFile*/ null,
+                            /*addToolEnv*/ false
+                          )
                         /* Copy our war file into the deploy directory for easy
                          * COPYing into our container
                          */
