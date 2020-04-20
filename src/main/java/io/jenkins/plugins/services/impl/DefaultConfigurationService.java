@@ -112,13 +112,13 @@ public class DefaultConfigurationService implements ConfigurationService {
   }
 
   public String getJiraURL() {
-    return "https://issues.jenkins.io";
+    return "https://issues.jenkins-ci.org";
   }
 
   public CredentialsProvider getJiraCredentials() {
     CredentialsProvider credsProvider = new BasicCredentialsProvider();
     credsProvider.setCredentials(
-      new AuthScope("issues.jenkins.io", 443),
+      AuthScope.ANY,
       new UsernamePasswordCredentials(StringUtils.trimToNull(System.getenv("JIRA_USERNAME")), StringUtils.trimToNull(System.getenv("JIRA_PASSWORD"))));
     return credsProvider;
   }
