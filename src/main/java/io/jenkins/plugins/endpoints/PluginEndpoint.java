@@ -80,9 +80,7 @@ public class PluginEndpoint {
       if (plugin == null) {
         throw new WebApplicationException(Response.Status.NOT_FOUND);
       }
-      JiraIssues jiraIssues = new HttpClientJiraIssues(configurationService).getIssues(plugin.getName());
-      // jiraIssues.issues = searchResult.getIssues();
-      return jiraIssues;
+      return new HttpClientJiraIssues(configurationService).getIssues(plugin.getName());
     } catch (ServiceException | IOException e) {
       logger.error("Problem getting plugin " + name, e);
       throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
