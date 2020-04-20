@@ -103,7 +103,7 @@ public class HttpClientJiraIssues {
       jiraIssue.issueType = issuetype != null ? issuetype.optString("name") : null;
       jiraIssue.priority =  priority != null ? priority.optString("name") : null;
       jiraIssue.status =  status != null ? status.optString("status") : null;
-      jiraIssue.resolution = resolution != null ? reporter.optString("name") : null;
+      jiraIssue.resolution = resolution != null ? resolution.optString("name") : null;
       jiraIssue.reporter = reporter != null ? reporter.optString("displayName") : null;
       jiraIssue.assignee = assignee != null ? assignee.optString("displayName") : null;
 
