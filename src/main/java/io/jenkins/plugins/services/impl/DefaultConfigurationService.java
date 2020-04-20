@@ -8,9 +8,13 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
@@ -107,6 +111,18 @@ public class DefaultConfigurationService implements ConfigurationService {
     }
   }
 
+  public String getJiraURL() {
+    return "https://issues.jenkins.io";
+  }
+
+  public CredentialsProvider getJiraCredentials() {
+    CredentialsProvider credsProvider = new BasicCredentialsProvider();
+    credsProvider.setCredentials(
+      new AuthScope("issues.jenkins.io", 443),
+      new UsernamePasswordCredentials(StringUtils.trimToNull(System.getenv("JIRA_USERNAME")), StringUtils.trimToNull(System.getenv("JIRA_PASSWORD"))));
+    return credsProvider;
+  }
+
   private String getDataFileUrl() {
     if (System.getenv().containsKey("DATA_FILE_URL")) {
       final String url = StringUtils.trimToNull(System.getenv("DATA_FILE_URL"));
@@ -122,7 +138,6 @@ public class DefaultConfigurationService implements ConfigurationService {
       return url;
     }
   }
-
   private String readGzipFile(final File file) {
     try(final BufferedReader reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(file)), StandardCharsets.UTF_8))) {
       return reader.lines().collect(Collectors.joining());

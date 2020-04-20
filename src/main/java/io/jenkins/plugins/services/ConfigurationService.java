@@ -1,6 +1,7 @@
 package io.jenkins.plugins.services;
 
 import io.jenkins.plugins.models.GeneratedPluginData;
+import org.apache.http.client.CredentialsProvider;
 
 /**
  * <p>Get various configuration pieces for the application</p>
@@ -15,4 +16,7 @@ public interface ConfigurationService {
      */
   GeneratedPluginData getIndexData() throws ServiceException;
 
+  CredentialsProvider getJiraCredentials();
+
+  String getJiraURL();
 }
