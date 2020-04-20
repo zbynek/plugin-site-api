@@ -14,6 +14,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -94,6 +95,7 @@ public class HttpClientWikiService implements WikiService {
        if (apiUrl != null) {
          List<Header> headers = extractor.getHeaders();
          String content = getHttpContent(apiUrl, headers);
+         headers.add(new BasicHeader("User-Agent", "jenkins-wiki-exporter/actually-plugin-site-api"));
          if (content == null) {
            return null; // error logged in getHttpContent
          }
