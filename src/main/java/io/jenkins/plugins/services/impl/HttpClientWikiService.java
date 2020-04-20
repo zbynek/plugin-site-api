@@ -19,6 +19,7 @@ import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Collector;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +94,7 @@ public class HttpClientWikiService implements WikiService {
     for (WikiExtractor extractor: WIKI_URLS) {
        String apiUrl = extractor.getApiUrl(wikiUrl);
        if (apiUrl != null) {
-         List<Header> headers = extractor.getHeaders();
+         List<Header> headers = new ArrayList(extractor.getHeaders());
          String content = getHttpContent(apiUrl, headers);
          headers.add(new BasicHeader("User-Agent", "jenkins-wiki-exporter/actually-plugin-site-api"));
          if (content == null) {
