@@ -70,9 +70,9 @@ public class PluginEndpoint {
    * <p>Get issues</p>
    *
    * @param name The plugin to retrieve
-   * @return Matching plugin
+   * @return Matching issues
    */
-  @Path("/issues")
+  @Path("/issues/open")
   @GET
   public JiraIssues getIssue(@PathParam("name") String name) {
     try {
