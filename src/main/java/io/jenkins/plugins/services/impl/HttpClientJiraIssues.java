@@ -96,13 +96,14 @@ public class HttpClientJiraIssues {
       JSONObject issuetype = fields.optJSONObject("issuetype");
       JSONObject priority = fields.optJSONObject("priority");
       JSONObject status = fields.optJSONObject("status");
-      // JSONObject = fields.optJSONObject("creator");
       JSONObject reporter = fields.optJSONObject("reporter");
       JSONObject assignee = fields.optJSONObject("assignee");
+      JSONObject resolution = fields.optJSONObject("resolution");
 
       jiraIssue.issueType = issuetype != null ? issuetype.optString("name") : null;
       jiraIssue.priority =  priority != null ? priority.optString("name") : null;
       jiraIssue.status =  status != null ? status.optString("status") : null;
+      jiraIssue.resolution = resolution != null ? reporter.optString("name") : null;
       jiraIssue.reporter = reporter != null ? reporter.optString("displayName") : null;
       jiraIssue.assignee = assignee != null ? assignee.optString("displayName") : null;
 

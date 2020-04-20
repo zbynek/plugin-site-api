@@ -52,6 +52,10 @@ public class ConfluenceDirectExtractor implements WikiExtractor {
     }
     // Remove any table of contents
     wikiContent.getElementsByClass("toc").remove();
+
+    // Remove the jira issues
+    wikiContent.getElementsByClass(".jira-issues").remove();
+    
     // Replace href/src with the wiki url
     service.convertLinksToAbsolute(wikiContent, BASE_URL, "/display/JENKINS/");
     return wikiContent.html();
