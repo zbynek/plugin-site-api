@@ -42,6 +42,7 @@ public class HttpClientJiraIssues extends HttpClient {
   @Override
   public String getHttpContent(String url, List<Header> headers) {
     url = this.configurationService.getJiraURL() + url;
+    logger.debug("getHttpContent - " + url);
     return super.getHttpContent(url, headers);
   }
 
