@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  *
  * <p>For performance reasons the content for a plugin url is cached using a <code>LoadingCache</code> for 6 hours</p>
  */
-public class HttpClientWikiService implements WikiService {
+public class HttpClientWikiService extends HttpClient implements WikiService {
 
   private Logger logger = LoggerFactory.getLogger(HttpClientWikiService.class);
 
@@ -84,7 +84,7 @@ public class HttpClientWikiService implements WikiService {
        String apiUrl = extractor.getApiUrl(wikiUrl);
        if (apiUrl != null) {
          List<Header> headers = new ArrayList(extractor.getHeaders());
-         String content =  new HttpClient().getHttpContent(apiUrl, headers);
+         String content = getHttpContent(apiUrl, headers);
          headers.add(new BasicHeader("User-Agent", "jenkins-wiki-exporter/actually-plugin-site-api"));
          if (content == null) {
            return null; // error logged in getHttpContent
