@@ -29,7 +29,8 @@ public class HttpClientJiraIssues extends HttpClient {
     this.configurationService = configurationService;
   }
 
-  private CloseableHttpClient getHttpClient() {
+  @Override
+  protected CloseableHttpClient getHttpClient() {
     final RequestConfig requestConfig = RequestConfig.copy(RequestConfig.DEFAULT)
       .setConnectionRequestTimeout(5000)
       .setConnectTimeout(5000)

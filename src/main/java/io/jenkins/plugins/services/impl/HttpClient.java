@@ -17,9 +17,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class HttpClient {
-  private Logger logger = LoggerFactory.getLogger(HttpClient.class);
+  protected Logger logger = LoggerFactory.getLogger(HttpClient.class);
 
-  private CloseableHttpClient getHttpClient() {
+  protected CloseableHttpClient getHttpClient() {
     final RequestConfig requestConfig = RequestConfig.copy(RequestConfig.DEFAULT)
       .setConnectionRequestTimeout(5000)
       .setConnectTimeout(5000)
