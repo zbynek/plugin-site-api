@@ -5,14 +5,10 @@ import com.google.common.base.Strings;
 import io.jenkins.plugins.models.JiraIssue;
 import io.jenkins.plugins.models.JiraIssues;
 import io.jenkins.plugins.services.ConfigurationService;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpStatus;
+import org.apache.http.Header;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -20,9 +16,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
 
-public class HttpClientJiraIssues {
+public class HttpClientJiraIssues extends HttpClient {
   private final ConfigurationService configurationService;
   private Logger logger = LoggerFactory.getLogger(HttpClientJiraIssues.class);
 
@@ -41,28 +38,10 @@ public class HttpClientJiraIssues {
     return HttpClients.custom().setDefaultCredentialsProvider(this.configurationService.getJiraCredentials()).setDefaultRequestConfig(requestConfig).build();
   }
 
-  private String getHttpContent(String url) {
+  @Override
+  public String getHttpContent(String url, List<Header> headers) {
     url = this.configurationService.getJiraURL() + url;
-    logger.info("getHttpContent(" + url + ")");
-    final HttpGet get = new HttpGet(url);
-    try (final CloseableHttpClient httpClient = getHttpClient();
-         final CloseableHttpResponse response = httpClient.execute(get)) {
-      final HttpEntity entity = response.getEntity();
-      final String html = EntityUtils.toString(entity, StandardCharsets.UTF_8);
-      EntityUtils.consume(entity);
-
-      if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-        return html;
-      } else {
-        final String msg = String.format("Unable to get content from %s - returned status code %d - %S", url, response.getStatusLine().getStatusCode(), html);
-        logger.warn(msg);
-        return null;
-      }
-    } catch (IOException e) {
-      final String msg = "Problem getting wiki content";
-      logger.error(msg, e);
-      return null;
-    }
+    return super.getHttpContent(url, headers);
   }
 
   public JiraIssues getIssues(String pluginName) throws IOException {
@@ -74,7 +53,7 @@ public class HttpClientJiraIssues {
     JiraIssues jiraIssues = new JiraIssues();
 
     String query = URLEncoder.encode("project=JENKINS AND status in (Open, \"In Progress\", Reopened) AND component=" + pluginName + "-plugin", "UTF-8");
-    String jsonInput = getHttpContent("/rest/api/2/search?startAt=" + startAt + "&maxResults=" + maxResults + "&jql=" + query);
+    String jsonInput = getHttpContent("/rest/api/2/search?startAt=" + startAt + "&maxResults=" + maxResults + "&jql=" + query, Collections.emptyList());
     if (Strings.isNullOrEmpty(jsonInput)) {
       throw new IOException("Empty return value");
     }

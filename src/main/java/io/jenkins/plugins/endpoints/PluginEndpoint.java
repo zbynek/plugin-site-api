@@ -6,7 +6,9 @@ import io.jenkins.plugins.services.ConfigurationService;
 import io.jenkins.plugins.services.DatastoreService;
 import io.jenkins.plugins.services.ServiceException;
 import io.jenkins.plugins.services.WikiService;
+import io.jenkins.plugins.services.impl.HttpClientGithubReleases;
 import io.jenkins.plugins.services.impl.HttpClientJiraIssues;
+import io.jenkins.plugins.models.PluginReleases;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,6 +85,27 @@ public class PluginEndpoint {
       return new HttpClientJiraIssues(configurationService).getIssues(plugin.getName());
     } catch (ServiceException | IOException e) {
       logger.error("Problem getting plugin " + name, e);
+      throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /**
+   * <p>Get releases</p>
+   *
+   * @param name The plugin to retrieve
+   * @return Releases
+   */
+  @Path("/releases")
+  @GET
+  public PluginReleases getReleases(@PathParam("name") String name) {
+    try {
+      final Plugin plugin = datastoreService.getPlugin(name);
+      if (plugin == null) {
+        throw new WebApplicationException(Response.Status.NOT_FOUND);
+      }
+      return new HttpClientGithubReleases(this.configurationService).getReleases(plugin);
+    } catch (ServiceException | IOException e) {
+      logger.error("Problem getting plugin releases " + name, e);
       throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
     }
   }

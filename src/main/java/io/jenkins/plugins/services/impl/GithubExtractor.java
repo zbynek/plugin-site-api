@@ -30,14 +30,16 @@ public abstract class GithubExtractor implements WikiExtractor {
       return null;
     }
 
-    String clientId = getClientId();
+    String clientId = DefaultConfigurationService._getGithubClientId();
+    String clientSecret = DefaultConfigurationService._getGithubClientSecret();
+
     if (clientId == null) {
       LOGGER.log(Level.WARNING, "Cannot retrieve API URL for {0}. No GitHub Client ID specified", wikiUrl);
       return null;
     }
 
     return String.format(API_URL_PATTERN, matcher.getRepo(),
-        matcher.getEndpoint(), matcher.getBranch(), clientId, System.getenv("GITHUB_SECRET"));
+        matcher.getEndpoint(), matcher.getBranch(), clientId, clientSecret);
   }
 
   @Override
@@ -83,14 +85,6 @@ public abstract class GithubExtractor implements WikiExtractor {
 
     // Relative image inclusions, we resolve /docs/images/screenshot.png as https://cdn.jsdelivr.net/gh/jenkinsci/folder-auth-plugin@master/docs/images/screenshot.png
     wikiContent.getElementsByAttribute("src").forEach(element -> service.replaceAttribute(element, "src", imageHost, path));
-  }
-
-  private String getClientId() {
-    String clientId = StringUtils.trimToNull(System.getenv("GITHUB_CLIENT_ID"));
-    if (clientId != null) {
-      return clientId;
-    }
-    return StringUtils.trimToNull(System.getProperty("github.client.id"));
   }
 
 }

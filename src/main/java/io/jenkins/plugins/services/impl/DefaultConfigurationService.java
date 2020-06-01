@@ -123,6 +123,30 @@ public class DefaultConfigurationService implements ConfigurationService {
     return credsProvider;
   }
 
+  public static String _getGithubClientId() {
+    String clientId = StringUtils.trimToNull(System.getenv("GITHUB_CLIENT_ID"));
+    if (clientId != null) {
+      return clientId;
+    }
+    return StringUtils.trimToNull(System.getProperty("github.client.id"));
+  }
+
+  public String getGithubClientId() {
+    return DefaultConfigurationService._getGithubClientId();
+  }
+
+  public static String _getGithubClientSecret() {
+    String clientId = StringUtils.trimToNull(System.getenv("GITHUB_SECRET"));
+    if (clientId != null) {
+      return clientId;
+    }
+    return StringUtils.trimToNull(System.getProperty("github.client.secret"));
+  }
+
+  public String getGithubClientSecret() {
+    return DefaultConfigurationService._getGithubClientSecret();
+  }
+
   private String getDataFileUrl() {
     if (System.getenv().containsKey("DATA_FILE_URL")) {
       final String url = StringUtils.trimToNull(System.getenv("DATA_FILE_URL"));
@@ -171,4 +195,8 @@ public class DefaultConfigurationService implements ConfigurationService {
     }
   }
 
+  @Override
+  public String getGithubApiBase() {
+    return "https://api.github.com";
+  }
 }
