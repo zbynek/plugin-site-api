@@ -52,7 +52,7 @@ public class HttpClientJiraIssues extends HttpClient {
     int maxResults = 100;
     JiraIssues jiraIssues = new JiraIssues();
 
-    String query = URLEncoder.encode("project=JENKINS AND status in (Open, \"In Progress\", Reopened) AND component=" + pluginName + "-plugin", "UTF-8");
+    String query = URLEncoder.encode("project=JENKINS AND status in (Open, \"In Progress\", Reopened) AND component=" + pluginName.replaceAll("-plugin$", "") + "-plugin", "UTF-8");
     String jsonInput = getHttpContent("/rest/api/2/search?startAt=" + startAt + "&maxResults=" + maxResults + "&jql=" + query, Collections.emptyList());
     if (Strings.isNullOrEmpty(jsonInput)) {
       throw new IOException("Empty return value");
