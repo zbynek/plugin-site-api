@@ -1,5 +1,6 @@
 package io.jenkins.plugins.models;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -12,11 +13,8 @@ public class PluginRelease {
   @JsonProperty("published_at") final private Date publishedAt;
   @JsonProperty("body") private String body;
 
-  public PluginRelease() {
-    this("", "", new Date(), "");
-  }
-
-  public PluginRelease(String tagName, String name, Date publishedAt, String body) {
+  @JsonCreator
+  public PluginRelease(@JsonProperty("tag_name") String tagName, @JsonProperty("name") String name, @JsonProperty("published_at") Date publishedAt, @JsonProperty("body") String body) {
     this.tagName = tagName;
     this.name = name;
     this.publishedAt = publishedAt;
