@@ -18,8 +18,10 @@ import java.util.Arrays;
 import java.util.Collections;
 
 public class HttpClientGithubReleases extends HttpClient {
-  private final ConfigurationService configurationService;
+  private static final ObjectMapper objectMapper = new ObjectMapper();
   private Logger logger = LoggerFactory.getLogger(PluginEndpoint.class);
+
+  private final ConfigurationService configurationService;
 
   public HttpClientGithubReleases(ConfigurationService configurationService) {
     super();
@@ -59,7 +61,6 @@ public class HttpClientGithubReleases extends HttpClient {
       throw new IOException("Empty return value");
     }
 
-    ObjectMapper objectMapper = new ObjectMapper();
     return new PluginReleases(objectMapper.readValue(
       jsonInput,
       new TypeReference<ArrayList<PluginRelease>>() {}
