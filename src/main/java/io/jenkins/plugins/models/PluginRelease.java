@@ -3,6 +3,8 @@ package io.jenkins.plugins.models;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.vladsch.flexmark.ext.emoji.EmojiExtension;
+import com.vladsch.flexmark.ext.emoji.EmojiShortcutType;
 import com.vladsch.flexmark.ext.gfm.issues.GfmIssuesExtension;
 import com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension;
 import com.vladsch.flexmark.ext.gfm.tasklist.TaskListExtension;
@@ -30,8 +32,10 @@ public class PluginRelease {
       StrikethroughExtension.create(),
       GfmUsersExtension.create(),
       TaskListExtension.create(),
-      GfmIssuesExtension.create()
-      ));
+      GfmIssuesExtension.create(),
+      EmojiExtension.create()
+    ));
+    options.set(EmojiExtension.USE_SHORTCUT_TYPE, EmojiShortcutType.GITHUB);
 
     Parser parser = Parser.builder(options).build();
     HtmlRenderer renderer = HtmlRenderer.builder(options).build();
