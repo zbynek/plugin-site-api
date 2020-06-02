@@ -17,13 +17,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-public class HttpClientGithubReleases extends HttpClient {
+public class HttpClientReleases extends HttpClient {
   private static final ObjectMapper objectMapper = new ObjectMapper();
   private Logger logger = LoggerFactory.getLogger(PluginEndpoint.class);
 
   private final ConfigurationService configurationService;
 
-  public HttpClientGithubReleases(ConfigurationService configurationService) {
+  public HttpClientReleases(ConfigurationService configurationService) {
     super();
     this.configurationService = configurationService;
   }

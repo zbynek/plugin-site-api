@@ -6,7 +6,7 @@ import io.jenkins.plugins.services.ConfigurationService;
 import io.jenkins.plugins.services.DatastoreService;
 import io.jenkins.plugins.services.ServiceException;
 import io.jenkins.plugins.services.WikiService;
-import io.jenkins.plugins.services.impl.HttpClientGithubReleases;
+import io.jenkins.plugins.services.impl.HttpClientReleases;
 import io.jenkins.plugins.services.impl.HttpClientJiraIssues;
 import io.jenkins.plugins.models.PluginReleases;
 import org.slf4j.Logger;
@@ -103,7 +103,7 @@ public class PluginEndpoint {
       if (plugin == null) {
         throw new WebApplicationException(Response.Status.NOT_FOUND);
       }
-      return new HttpClientGithubReleases(this.configurationService).getReleases(plugin);
+      return new HttpClientReleases(this.configurationService).getReleases(plugin);
     } catch (ServiceException | IOException e) {
       logger.error("Problem getting plugin releases " + name, e);
       throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);

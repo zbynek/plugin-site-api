@@ -21,8 +21,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.junit.Assert.assertEquals;
 
-public class HttpClientGithubReleasesTest {
-  static protected final String WIREMOCK_PATH = "src/test/resources/wiremocks/HttpClientGithubReleasesTest";
+public class HttpClientReleasesTest {
+  static protected final String WIREMOCK_PATH = "src/test/resources/wiremocks/HttpClientReleasesTest";
 
   @Rule
   public WireMockRule wireMockRule = new WireMockRule(
@@ -31,7 +31,7 @@ public class HttpClientGithubReleasesTest {
       .usingFilesUnderDirectory(WIREMOCK_PATH)
   );
 
-  private HttpClientGithubReleases httpClientGithubReleases;
+  private HttpClientReleases httpClientReleases;
 
   static final private Plugin lighthouseReportPlugin = new Plugin() {
     @Override
@@ -72,7 +72,7 @@ public class HttpClientGithubReleasesTest {
         .willReturn(aResponse().proxiedFrom("https://api.github.com")));
     }
 
-    this.httpClientGithubReleases = new HttpClientGithubReleases(new DefaultConfigurationService() {
+    this.httpClientReleases = new HttpClientReleases(new DefaultConfigurationService() {
       @Override
       public String getGithubClientId() {
         return "";
@@ -92,7 +92,7 @@ public class HttpClientGithubReleasesTest {
 
   @Test
   public void getReleasesHappy() throws Exception {
-    PluginReleases releases = this.httpClientGithubReleases.getReleases(lighthouseReportPlugin);
+    PluginReleases releases = this.httpClientReleases.getReleases(lighthouseReportPlugin);
     assertEquals(1, releases.getReleases().size());
     assertEquals(
       new PluginRelease(
@@ -107,7 +107,7 @@ public class HttpClientGithubReleasesTest {
 
   @Test
   public void getReleasesBadScmLink() throws Exception {
-    PluginReleases releases = this.httpClientGithubReleases.getReleases(badScmPlugin);
+    PluginReleases releases = this.httpClientReleases.getReleases(badScmPlugin);
     assertEquals(0, releases.getReleases().size());
   }
 }
