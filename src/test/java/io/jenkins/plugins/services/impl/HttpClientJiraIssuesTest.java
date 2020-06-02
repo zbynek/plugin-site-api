@@ -2,7 +2,9 @@ package io.jenkins.plugins.services.impl;
 
 import com.github.tomakehurst.wiremock.common.SingleRootFileSource;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.google.common.base.Strings;
 import io.jenkins.plugins.models.JiraIssues;
+import org.apache.http.client.CredentialsProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -44,6 +46,24 @@ public class HttpClientJiraIssuesTest {
     }
 
     this.httpClientJiraIssues = new HttpClientJiraIssues(new DefaultConfigurationService() {
+      @Override
+      protected String getJiraUsername() {
+        String username = super.getJiraUsername();
+        if (Strings.isNullOrEmpty(username)) {
+          return "username";
+        }
+        return username;
+      }
+
+      @Override
+      protected String getJiraPassword() {
+        String password = super.getJiraPassword();
+        if (Strings.isNullOrEmpty(password)) {
+          return "password";
+        }
+        return password;
+      }
+
       @Override
       public String getJiraURL() {
         return wireMockRule.baseUrl();
