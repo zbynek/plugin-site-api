@@ -1,0 +1,34 @@
+{
+  "id" : "b1dfee49-182f-4e97-92d2-9265517b4dd9",
+  "name" : "rest_api_2_search",
+  "request" : {
+    "url" : "/rest/api/2/search?startAt=400&maxResults=100&jql=project%3DJENKINS+AND+status+in+%28Open%2C+%22In+Progress%22%2C+Reopened%29+AND+component%3Dgit-plugin",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "rest_api_2_search-b1dfee49-182f-4e97-92d2-9265517b4dd9.json",
+    "headers" : {
+      "Date" : "Tue, 02 Jun 2020 00:51:18 GMT",
+      "Server" : "Apache/2.4.29 (Ubuntu)",
+      "Access-Control-Allow-Origin" : "http://localhost:8000",
+      "X-AREQUESTID" : "51x55727795x1",
+      "X-XSS-Protection" : "1; mode=block",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Frame-Options" : "SAMEORIGIN",
+      "Content-Security-Policy" : "frame-ancestors 'self'",
+      "X-ASEN" : "SEN-2076339",
+      "X-AUSERNAME" : "anonymous",
+      "Cache-Control" : "no-cache, no-store, no-transform",
+      "Content-Type" : "application/json;charset=UTF-8",
+      "Set-Cookie" : [ "atlassian.xsrf.token=B5BF-G2S8-8N2K-SZ3R_223d90a842840b44cd02e174fb24ae9fc9c8aa5a_lout; Path=/", "JSESSIONID=6927F15E48F637515D0F887FA1083EA8; Path=/; HttpOnly" ],
+      "Via" : "1.1 issues.jenkins-ci.org",
+      "Vary" : "Accept-Encoding",
+      "Keep-Alive" : "timeout=3, max=96",
+      "Connection" : "Keep-Alive"
+    }
+  },
+  "uuid" : "b1dfee49-182f-4e97-92d2-9265517b4dd9",
+  "persistent" : true,
+  "insertionIndex" : 5
+}

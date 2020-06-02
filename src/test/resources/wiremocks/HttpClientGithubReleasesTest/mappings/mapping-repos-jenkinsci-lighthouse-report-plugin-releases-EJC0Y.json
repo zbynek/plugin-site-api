@@ -1,21 +1,21 @@
 {
-  "id" : "32bc9ad2-e6a8-3b87-b377-96c2b1b93ecb",
+  "id" : "b78085ca-3274-368d-8d25-96b06e0b3551",
   "request" : {
     "url" : "/repos/jenkinsci/lighthouse-report-plugin/releases?client_id=&client_secret=",
     "method" : "GET"
   },
   "response" : {
     "status" : 200,
-    "bodyFileName" : "body-repos-jenkinsci-lighthouse-report-plugin-releases-t2ost.json",
+    "bodyFileName" : "body-repos-jenkinsci-lighthouse-report-plugin-releases-EJC0Y.json",
     "headers" : {
       "Server" : "GitHub.com",
-      "Date" : "Mon, 01 Jun 2020 07:32:30 GMT",
+      "Date" : "Tue, 02 Jun 2020 00:52:38 GMT",
       "Content-Type" : "application/json; charset=utf-8",
       "Transfer-Encoding" : "chunked",
       "Status" : "200 OK",
       "X-RateLimit-Limit" : "60",
-      "X-RateLimit-Remaining" : "48",
-      "X-RateLimit-Reset" : "1590998114",
+      "X-RateLimit-Remaining" : "59",
+      "X-RateLimit-Reset" : "1591062758",
       "Cache-Control" : "public, max-age=60, s-maxage=60",
       "Vary" : [ "Accept", "Accept-Encoding, Accept, X-Requested-With" ],
       "ETag" : "W/\"3900f2a359188bff14cf4f7d5f6b568d\"",
@@ -28,8 +28,8 @@
       "X-XSS-Protection" : "1; mode=block",
       "Referrer-Policy" : "origin-when-cross-origin, strict-origin-when-cross-origin",
       "Content-Security-Policy" : "default-src 'none'",
-      "X-GitHub-Request-Id" : "CEEC:2E60:19949B0:2AEBE30:5ED4AF0D"
+      "X-GitHub-Request-Id" : "9ED8:3A99:8AA89E:1629457:5ED5A2D5"
     }
   },
-  "uuid" : "32bc9ad2-e6a8-3b87-b377-96c2b1b93ecb"
+  "uuid" : "b78085ca-3274-368d-8d25-96b06e0b3551"
 }

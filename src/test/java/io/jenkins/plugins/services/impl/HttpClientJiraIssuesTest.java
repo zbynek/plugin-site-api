@@ -8,28 +8,40 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.recordSpec;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.junit.Assert.*;
 
 public class HttpClientJiraIssuesTest {
-  static final private String WIREMOCK_DIR = "./src/test/resources/wiremocks/HttpClientJiraIssuesTest";
+  static protected final String WIREMOCK_PATH = "src/test/resources/wiremocks/HttpClientJiraIssuesTest";
 
   @Rule
   public WireMockRule wireMockRule = new WireMockRule(
-    options().fileSource(new SingleRootFileSource(WIREMOCK_DIR))
+    options()
+      .dynamicPort()
+      .usingFilesUnderDirectory(WIREMOCK_PATH)
   );
+
   private HttpClientJiraIssues httpClientJiraIssues;
 
   @Before
   public void setUp() {
-    wireMockRule.startRecording("https://issues.jenkins-ci.org/");
-    wireMockRule.enableRecordMappings(
-      new SingleRootFileSource(WIREMOCK_DIR  + "/recordings"),
-      new SingleRootFileSource(WIREMOCK_DIR  + "/files")
-    );
+    if (Boolean.getBoolean("enable.recording")) {
+      File recordingsDir = new File(WIREMOCK_PATH + "/mappings");
+      recordingsDir.mkdirs();
+      File filesDir = new File(WIREMOCK_PATH + "/__files");
+      filesDir.mkdirs();
+      wireMockRule.enableRecordMappings(
+        new SingleRootFileSource(recordingsDir.getAbsolutePath()),
+        new SingleRootFileSource(filesDir.getAbsolutePath())
+      );
+
+      stubFor(get(urlMatching(".*")).atPriority(10)
+        .willReturn(aResponse().proxiedFrom("https://issues.jenkins-ci.org")));
+    }
 
     this.httpClientJiraIssues = new HttpClientJiraIssues(new DefaultConfigurationService() {
       @Override

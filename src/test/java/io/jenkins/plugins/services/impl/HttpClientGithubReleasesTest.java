@@ -1,5 +1,6 @@
 package io.jenkins.plugins.services.impl;
 
+import com.github.tomakehurst.wiremock.common.SingleRootFileSource;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.jenkins.plugins.models.Plugin;
 import io.jenkins.plugins.models.PluginRelease;
@@ -9,6 +10,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.io.File;
 import java.time.Instant;
 import java.util.Date;
 
@@ -20,15 +22,13 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import static org.junit.Assert.assertEquals;
 
 public class HttpClientGithubReleasesTest {
-  static private String getWiremockDir(String className) {
-    return "src/test/resources/wiremocks/"+className;
-  }
+  static protected final String WIREMOCK_PATH = "src/test/resources/wiremocks/HttpClientGithubReleasesTest";
 
   @Rule
   public WireMockRule wireMockRule = new WireMockRule(
     options()
       .dynamicPort()
-      .usingFilesUnderClasspath("wiremocks/" + getClass().getSimpleName())
+      .usingFilesUnderDirectory(WIREMOCK_PATH)
   );
 
   private HttpClientGithubReleases httpClientGithubReleases;
@@ -58,24 +58,26 @@ public class HttpClientGithubReleasesTest {
 
   @Before
   public void setUp() {
-//    File recordingsDir = new File(getWiremockDir(getClass().getSimpleName()) + "/recordings");
-//    recordingsDir.mkdirs();
-//    File filesDir = new File(getWiremockDir(getClass().getSimpleName())  + "/files");
-//    filesDir.mkdirs();
-//    wireMockRule.enableRecordMappings(
-//      new SingleRootFileSource(recordingsDir.getAbsolutePath()),
-//      new SingleRootFileSource(filesDir.getAbsolutePath())
-//    );
-    // wireMockRule.startRecording("https://api.github.com/");
-    stubFor(get(urlMatching(".*")).atPriority(10)
-      .willReturn(aResponse().proxiedFrom("https://api.github.com")));
+    if (Boolean.getBoolean("enable.recording")) {
+      File recordingsDir = new File(WIREMOCK_PATH + "/mappings");
+      recordingsDir.mkdirs();
+      File filesDir = new File(WIREMOCK_PATH + "/__files");
+      filesDir.mkdirs();
+      wireMockRule.enableRecordMappings(
+        new SingleRootFileSource(recordingsDir.getAbsolutePath()),
+        new SingleRootFileSource(filesDir.getAbsolutePath())
+      );
+
+      stubFor(get(urlMatching(".*")).atPriority(10)
+        .willReturn(aResponse().proxiedFrom("https://api.github.com")));
+    }
 
     this.httpClientGithubReleases = new HttpClientGithubReleases(new DefaultConfigurationService() {
       @Override
       public String getGithubClientId() {
         return "";
       }
-      
+
       @Override
       public String getGithubClientSecret() {
         return "";
@@ -90,8 +92,6 @@ public class HttpClientGithubReleasesTest {
 
   @Test
   public void getReleasesHappy() throws Exception {
-    // stubFor(get("/repos/jenkinsci/lighthouse-report-plugin/releases?client_id=null&client_secret=null").willReturn(aResponse().withStatus(200)));
-
     PluginReleases releases = this.httpClientGithubReleases.getReleases(lighthouseReportPlugin);
     assertEquals(1, releases.getReleases().size());
     assertEquals(
