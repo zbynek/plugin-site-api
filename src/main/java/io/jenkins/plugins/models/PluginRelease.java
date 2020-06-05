@@ -19,12 +19,9 @@ import java.util.Date;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PluginRelease {
-  @JsonProperty("tag_name") final private String tagName;
-  @JsonProperty("name") final private String name;
-  @JsonProperty("published_at") final private Date publishedAt;
-  @JsonProperty("body") private String body;
-
-  @JsonProperty("bodyHTML") private String getBodyHTML() {
+  private static final HtmlRenderer HTML_RENDERER;
+  private static final Parser MARKDOWN_PARSER;
+  static {
     MutableDataSet options = new MutableDataSet();
 
     options.set(Parser.EXTENSIONS, Arrays.asList(
@@ -37,10 +34,16 @@ public class PluginRelease {
     ));
     options.set(EmojiExtension.USE_SHORTCUT_TYPE, EmojiShortcutType.GITHUB);
 
-    Parser parser = Parser.builder(options).build();
-    HtmlRenderer renderer = HtmlRenderer.builder(options).build();
+    MARKDOWN_PARSER = Parser.builder(options).build();
+    HTML_RENDERER = HtmlRenderer.builder(options).escapeHtml(true).build();
+  }
+  @JsonProperty("tag_name") final private String tagName;
+  @JsonProperty("name") final private String name;
+  @JsonProperty("published_at") final private Date publishedAt;
+  private String body;
 
-    return  renderer.render(parser.parse(this.body.replaceAll("<!--.*?-->", "")));
+  @JsonProperty("bodyHTML") public String getBodyHTML() {
+    return HTML_RENDERER.render(MARKDOWN_PARSER.parse(this.body.replaceAll("<!--.*?-->", "")));
   }
 
 

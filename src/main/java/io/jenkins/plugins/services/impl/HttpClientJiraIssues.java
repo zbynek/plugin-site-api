@@ -23,8 +23,6 @@ public class HttpClientJiraIssues extends HttpClient {
   private final ConfigurationService configurationService;
   private Logger logger = LoggerFactory.getLogger(HttpClientJiraIssues.class);
 
-  private ObjectMapper mapper = new ObjectMapper();
-
   public HttpClientJiraIssues(ConfigurationService configurationService) {
     this.configurationService = configurationService;
   }
