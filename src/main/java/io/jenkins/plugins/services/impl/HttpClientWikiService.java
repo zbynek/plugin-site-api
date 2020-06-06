@@ -7,26 +7,15 @@ import io.jenkins.plugins.services.ServiceException;
 import io.jenkins.plugins.services.WikiService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
-import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Collector;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  *
  * <p>For performance reasons the content for a plugin url is cached using a <code>LoadingCache</code> for 6 hours</p>
  */
-public class HttpClientWikiService implements WikiService {
+public class HttpClientWikiService extends HttpClient implements WikiService {
 
   private Logger logger = LoggerFactory.getLogger(HttpClientWikiService.class);
 
@@ -106,29 +95,6 @@ public class HttpClientWikiService implements WikiService {
      return null;
   }
 
-  private String getHttpContent(String url, List<Header> headers) {
-    final HttpGet get = new HttpGet(url);
-    headers.stream().forEach(get::setHeader);
-    try (final CloseableHttpClient httpClient = getHttpClient();
-        final CloseableHttpResponse response = httpClient.execute(get)) {
-      if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-        final HttpEntity entity = response.getEntity();
-        final String html = EntityUtils.toString(entity, StandardCharsets.UTF_8);
-        EntityUtils.consume(entity);
-        return html;
-      } else {
-        final String msg = String.format("Unable to get content from %s - returned status code %d", url,
-            response.getStatusLine().getStatusCode());
-        logger.warn(msg);
-        return null;
-      }
-    } catch (IOException e) {
-      final String msg = "Problem getting wiki content";
-      logger.error(msg, e);
-      return null;
-    }
-  }
-
   private Optional<WikiExtractor> getExtractor(String url) {
     return WIKI_URLS.stream().filter(t -> (t.getApiUrl(url) != null)).findFirst();
   }
@@ -174,15 +140,6 @@ public class HttpClientWikiService implements WikiService {
     final Element div = body.select("div").first();
     div.text("No documentation for this plugin could be found");
     return body.html();
-  }
-
-  private CloseableHttpClient getHttpClient() {
-    final RequestConfig requestConfig = RequestConfig.copy(RequestConfig.DEFAULT)
-      .setConnectionRequestTimeout(5000)
-      .setConnectTimeout(5000)
-      .setSocketTimeout(5000)
-      .build();
-    return HttpClients.custom().setDefaultRequestConfig(requestConfig).build();
   }
 
   public Element getElementByClassFromText(String className, String content) {

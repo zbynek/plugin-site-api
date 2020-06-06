@@ -8,9 +8,13 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
@@ -107,6 +111,50 @@ public class DefaultConfigurationService implements ConfigurationService {
     }
   }
 
+  public String getJiraURL() {
+    return "https://issues.jenkins-ci.org";
+  }
+
+  protected String getJiraUsername() {
+    return StringUtils.trimToNull(System.getenv("JIRA_USERNAME"));
+  }
+
+  protected String getJiraPassword() {
+    return StringUtils.trimToNull(System.getenv("JIRA_PASSWORD"));
+  }
+
+  public CredentialsProvider getJiraCredentials() {
+    CredentialsProvider credsProvider = new BasicCredentialsProvider();
+    credsProvider.setCredentials(
+      AuthScope.ANY,
+      new UsernamePasswordCredentials(this.getJiraUsername(), this.getJiraPassword()));
+    return credsProvider;
+  }
+
+  public static String _getGithubClientId() {
+    String clientId = StringUtils.trimToNull(System.getenv("GITHUB_CLIENT_ID"));
+    if (clientId != null) {
+      return clientId;
+    }
+    return StringUtils.trimToNull(System.getProperty("github.client.id"));
+  }
+
+  public String getGithubClientId() {
+    return DefaultConfigurationService._getGithubClientId();
+  }
+
+  public static String _getGithubClientSecret() {
+    String clientId = StringUtils.trimToNull(System.getenv("GITHUB_SECRET"));
+    if (clientId != null) {
+      return clientId;
+    }
+    return StringUtils.trimToNull(System.getProperty("github.client.secret"));
+  }
+
+  public String getGithubClientSecret() {
+    return DefaultConfigurationService._getGithubClientSecret();
+  }
+
   private String getDataFileUrl() {
     if (System.getenv().containsKey("DATA_FILE_URL")) {
       final String url = StringUtils.trimToNull(System.getenv("DATA_FILE_URL"));
@@ -122,7 +170,6 @@ public class DefaultConfigurationService implements ConfigurationService {
       return url;
     }
   }
-
   private String readGzipFile(final File file) {
     try(final BufferedReader reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(file)), StandardCharsets.UTF_8))) {
       return reader.lines().collect(Collectors.joining());
@@ -156,4 +203,8 @@ public class DefaultConfigurationService implements ConfigurationService {
     }
   }
 
+  @Override
+  public String getGithubApiBase() {
+    return "https://api.github.com";
+  }
 }

@@ -1,0 +1,35 @@
+{
+  "id" : "b78085ca-3274-368d-8d25-96b06e0b3551",
+  "request" : {
+    "url" : "/repos/jenkinsci/lighthouse-report-plugin/releases?client_id=&client_secret=",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-repos-jenkinsci-lighthouse-report-plugin-releases-EJC0Y.json",
+    "headers" : {
+      "Server" : "GitHub.com",
+      "Date" : "Tue, 02 Jun 2020 00:52:38 GMT",
+      "Content-Type" : "application/json; charset=utf-8",
+      "Transfer-Encoding" : "chunked",
+      "Status" : "200 OK",
+      "X-RateLimit-Limit" : "60",
+      "X-RateLimit-Remaining" : "59",
+      "X-RateLimit-Reset" : "1591062758",
+      "Cache-Control" : "public, max-age=60, s-maxage=60",
+      "Vary" : [ "Accept", "Accept-Encoding, Accept, X-Requested-With" ],
+      "ETag" : "W/\"3900f2a359188bff14cf4f7d5f6b568d\"",
+      "X-GitHub-Media-Type" : "github.v3; format=json",
+      "Access-Control-Expose-Headers" : "ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, Deprecation, Sunset",
+      "Access-Control-Allow-Origin" : "*",
+      "Strict-Transport-Security" : "max-age=31536000; includeSubdomains; preload",
+      "X-Frame-Options" : "deny",
+      "X-Content-Type-Options" : "nosniff",
+      "X-XSS-Protection" : "1; mode=block",
+      "Referrer-Policy" : "origin-when-cross-origin, strict-origin-when-cross-origin",
+      "Content-Security-Policy" : "default-src 'none'",
+      "X-GitHub-Request-Id" : "9ED8:3A99:8AA89E:1629457:5ED5A2D5"
+    }
+  },
+  "uuid" : "b78085ca-3274-368d-8d25-96b06e0b3551"
+}

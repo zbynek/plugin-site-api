@@ -1,16 +1,26 @@
 package io.jenkins.plugins.endpoints;
 
+import io.jenkins.plugins.models.JiraIssues;
 import io.jenkins.plugins.models.Plugin;
+import io.jenkins.plugins.services.ConfigurationService;
 import io.jenkins.plugins.services.DatastoreService;
 import io.jenkins.plugins.services.ServiceException;
 import io.jenkins.plugins.services.WikiService;
+import io.jenkins.plugins.services.impl.HttpClientReleases;
+import io.jenkins.plugins.services.impl.HttpClientJiraIssues;
+import io.jenkins.plugins.models.PluginReleases;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 
 /**
  * <p>Endpoint for a specific plugin</p>
@@ -29,6 +39,9 @@ public class PluginEndpoint {
 
   @Inject
   private WikiService wikiService;
+
+  @Inject
+  private ConfigurationService configurationService;
 
   /**
    * <p>Get a plugin by name</p>
@@ -51,6 +64,48 @@ public class PluginEndpoint {
       }
     } catch (ServiceException e) {
       logger.error("Problem getting plugin " + name, e);
+      throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /**
+   * <p>Get issues</p>
+   *
+   * @param name The plugin to retrieve
+   * @return Matching issues
+   */
+  @Path("/issues/open")
+  @GET
+  public JiraIssues getIssue(@PathParam("name") String name) {
+    try {
+      final Plugin plugin = datastoreService.getPlugin(name);
+      if (plugin == null) {
+        throw new WebApplicationException(Response.Status.NOT_FOUND);
+      }
+      return new HttpClientJiraIssues(configurationService).getIssues(plugin.getName());
+    } catch (ServiceException | IOException e) {
+      logger.error("Problem getting plugin " + name, e);
+      throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /**
+   * <p>Get releases</p>
+   *
+   * @param name The plugin to retrieve
+   * @return Releases
+   */
+  @Path("/releases")
+  @GET
+  public PluginReleases getReleases(@PathParam("name") String name) {
+    try {
+      final Plugin plugin = datastoreService.getPlugin(name);
+      if (plugin == null) {
+        throw new WebApplicationException(Response.Status.NOT_FOUND);
+      }
+      return new HttpClientReleases(this.configurationService).getReleases(plugin);
+    } catch (ServiceException | IOException e) {
+      logger.error("Problem getting plugin releases " + name, e);
       throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
     }
   }
