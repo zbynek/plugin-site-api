@@ -33,7 +33,7 @@ public class HttpClient {
     headers.stream().forEach(get::setHeader);
     try (final CloseableHttpClient httpClient = getHttpClient();
          final CloseableHttpResponse response = httpClient.execute(get)) {
-      if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+      if (this.isValidStatusCode(response.getStatusLine().getStatusCode())) {
         final HttpEntity entity = response.getEntity();
         final String html = EntityUtils.toString(entity, StandardCharsets.UTF_8);
         EntityUtils.consume(entity);
@@ -49,5 +49,9 @@ public class HttpClient {
       logger.error(msg, e);
       return null;
     }
+  }
+
+  protected boolean isValidStatusCode(int statusCode) {
+    return statusCode == HttpStatus.SC_OK;
   }
 }

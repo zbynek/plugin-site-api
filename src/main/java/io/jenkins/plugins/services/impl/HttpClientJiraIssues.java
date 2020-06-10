@@ -6,6 +6,7 @@ import io.jenkins.plugins.models.JiraIssue;
 import io.jenkins.plugins.models.JiraIssues;
 import io.jenkins.plugins.services.ConfigurationService;
 import org.apache.http.Header;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -44,21 +45,34 @@ public class HttpClientJiraIssues extends HttpClient {
     return super.getHttpContent(url, headers);
   }
 
+  @Override
+  protected boolean isValidStatusCode(int statusCode) {
+    return statusCode == HttpStatus.SC_OK || statusCode == HttpStatus.SC_BAD_REQUEST;
+  }
+
   public JiraIssues getIssues(String pluginName) throws IOException {
     return getIssues(pluginName, 0);
   }
 
   public JiraIssues getIssues(String pluginName, int startAt) throws IOException {
     int maxResults = 100;
+    String component = pluginName.replaceAll("-plugin$", "") + "-plugin";
     JiraIssues jiraIssues = new JiraIssues();
 
-    String query = URLEncoder.encode("project=JENKINS AND status in (Open, \"In Progress\", Reopened) AND component=" + pluginName.replaceAll("-plugin$", "") + "-plugin", "UTF-8");
+    String query = URLEncoder.encode("project=JENKINS AND status in (Open, \"In Progress\", Reopened) AND component=" + component, "UTF-8");
     String jsonInput = getHttpContent("/rest/api/2/search?startAt=" + startAt + "&maxResults=" + maxResults + "&jql=" + query, Collections.emptyList());
     if (Strings.isNullOrEmpty(jsonInput)) {
       throw new IOException("Empty return value");
     }
 
     JSONObject obj = new JSONObject(jsonInput);
+    if (obj.has("errorMessages")) {
+      if (obj.getJSONArray("errorMessages").join("|").contains("\"The value '" + component + "' does not exist for the field 'component'.\"")) {
+        logger.debug("JSON Response with error: " + jsonInput);
+        return jiraIssues;
+      }
+      throw new IOException(jsonInput);
+    }
 
     JSONArray jsonIssues = obj.getJSONArray("issues");
     for (Object issue : jsonIssues) {

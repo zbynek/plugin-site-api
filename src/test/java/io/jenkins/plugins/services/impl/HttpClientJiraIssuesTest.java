@@ -86,10 +86,19 @@ public class HttpClientJiraIssuesTest {
   }
 
   @Test
-  public void getIssues() throws IOException {
+  public void testHappyPath() throws IOException {
     JiraIssues issues = this.httpClientJiraIssues.getIssues("git");
 
     assertEquals(512, issues.getTotal());
     assertEquals(512, issues.issues.size());
   }
+
+  @Test
+  public void testComponentNotFoundName() throws IOException {
+    JiraIssues issues = this.httpClientJiraIssues.getIssues("cors-filter-plugin");
+
+    assertEquals(0, issues.getTotal());
+    assertEquals(0, issues.issues.size());
+  }
+
 }
