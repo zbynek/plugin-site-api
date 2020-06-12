@@ -67,7 +67,7 @@ node('docker&&linux') {
             def container
             stage('Containerize') {
                 container = docker.build("jenkinsciinfra/plugin-site-api:${env.BUILD_ID}-${shortCommit}",
-                                        '--no-cache --rm')
+                                        '--no-cache --rm .')
                 if (pushToDocker) {
                     echo "Pushing container jenkinsciinfra/plugin-site-api:${env.BUILD_ID}-${shortCommit}"
                     infra.withDockerCredentials {
