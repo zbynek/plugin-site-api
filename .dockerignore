@@ -7,3 +7,4 @@ plugins.json.gzip
 .project
 .settings
 .envrc
+!target/*.war

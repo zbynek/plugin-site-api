@@ -2,8 +2,6 @@ package io.jenkins.plugins.services.impl;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
@@ -12,6 +10,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class GithubExtractor implements WikiExtractor {
   /**
@@ -19,7 +19,8 @@ public abstract class GithubExtractor implements WikiExtractor {
    * to avoid !important override.
    */
   public static final String BOOTSTRAP_PADDING_5 = "p-5";
-  private static final Logger LOGGER = Logger.getLogger(GithubReadmeExtractor.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(GithubReadmeExtractor.class);
+
   private static final String API_URL_PATTERN =
       "https://api.github.com/repos/jenkinsci/%s/%s?ref=%s&client_id=%s&client_secret=%s";
 
@@ -34,7 +35,7 @@ public abstract class GithubExtractor implements WikiExtractor {
     String clientSecret = DefaultConfigurationService._getGithubClientSecret();
 
     if (clientId == null) {
-      LOGGER.log(Level.WARNING, "Cannot retrieve API URL for {0}. No GitHub Client ID specified", wikiUrl);
+      LOGGER.warn("Cannot retrieve API URL for {0}. No GitHub Client ID specified", wikiUrl);
       return null;
     }
 

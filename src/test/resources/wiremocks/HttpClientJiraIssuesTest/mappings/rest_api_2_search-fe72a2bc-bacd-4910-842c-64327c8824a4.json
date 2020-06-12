@@ -1,0 +1,32 @@
+{
+  "id" : "fe72a2bc-bacd-4910-842c-64327c8824a4",
+  "name" : "rest_api_2_search",
+  "request" : {
+    "url" : "/rest/api/2/search?startAt=0&maxResults=100&jql=project%3DJENKINS+AND+status+in+%28Open%2C+%22In+Progress%22%2C+Reopened%29+AND+component%3Dcors-filter-plugin",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 400,
+    "body" : "{\"errorMessages\":[\"The value 'cors-filter-plugin' does not exist for the field 'component'.\"],\"errors\":{}}",
+    "headers" : {
+      "Date" : "Tue, 09 Jun 2020 23:07:56 GMT",
+      "Server" : "Apache/2.4.29 (Ubuntu)",
+      "Access-Control-Allow-Origin" : "http://localhost:8000",
+      "X-AREQUESTID" : "1387x3591698x1",
+      "X-XSS-Protection" : "1; mode=block",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Frame-Options" : "SAMEORIGIN",
+      "Content-Security-Policy" : "frame-ancestors 'self'",
+      "X-ASEN" : "SEN-2076339",
+      "X-AUSERNAME" : "anonymous",
+      "Cache-Control" : "no-cache, no-store, no-transform",
+      "Content-Type" : "application/json;charset=UTF-8",
+      "Set-Cookie" : "atlassian.xsrf.token=B5BF-G2S8-8N2K-SZ3R_ae2eacd79556c97478fcc1dc6dd7071c6f72ab63_lout; Path=/",
+      "Via" : "1.1 issues.jenkins-ci.org",
+      "Connection" : "close"
+    }
+  },
+  "uuid" : "fe72a2bc-bacd-4910-842c-64327c8824a4",
+  "persistent" : true,
+  "insertionIndex" : 13
+}
