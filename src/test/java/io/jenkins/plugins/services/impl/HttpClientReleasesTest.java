@@ -1,7 +1,5 @@
 package io.jenkins.plugins.services.impl;
 
-import com.github.tomakehurst.wiremock.common.SingleRootFileSource;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.jenkins.plugins.models.Plugin;
 import io.jenkins.plugins.models.PluginRelease;
 import io.jenkins.plugins.models.PluginReleases;
@@ -10,26 +8,17 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.io.File;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Date;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.junit.Assert.assertEquals;
 
 public class HttpClientReleasesTest {
-  static protected final String WIREMOCK_PATH = "src/test/resources/wiremocks/HttpClientReleasesTest";
-
   @Rule
-  public WireMockRule wireMockRule = new WireMockRule(
-    options()
-      .dynamicPort()
-      .usingFilesUnderDirectory(WIREMOCK_PATH)
-  );
+  public PluginSiteApiWireMockRule wireMockRule = new PluginSiteApiWireMockRule(HttpClientReleasesTest.class, Arrays.asList(
+    "https://api.github.com"
+  ));
 
   private HttpClientReleases httpClientReleases;
 
@@ -58,21 +47,7 @@ public class HttpClientReleasesTest {
 
   @Before
   public void setUp() {
-    if (Boolean.getBoolean("enable.recording")) {
-      File recordingsDir = new File(WIREMOCK_PATH + "/mappings");
-      recordingsDir.mkdirs();
-      File filesDir = new File(WIREMOCK_PATH + "/__files");
-      filesDir.mkdirs();
-      wireMockRule.enableRecordMappings(
-        new SingleRootFileSource(recordingsDir.getAbsolutePath()),
-        new SingleRootFileSource(filesDir.getAbsolutePath())
-      );
-
-      stubFor(get(urlMatching(".*")).atPriority(10)
-        .willReturn(aResponse().proxiedFrom("https://api.github.com")));
-    }
-
-    this.httpClientReleases = new HttpClientReleases(new DefaultConfigurationService() {
+      this.httpClientReleases = new HttpClientReleases(new DefaultConfigurationService() {
       @Override
       public String getGithubClientId() {
         return "";

@@ -45,7 +45,7 @@ public class HttpClient {
         return null;
       }
     } catch (IOException e) {
-      final String msg = "Problem getting wiki content";
+      final String msg = "Problem getting content " + url;
       logger.error(msg, e);
       return null;
     }

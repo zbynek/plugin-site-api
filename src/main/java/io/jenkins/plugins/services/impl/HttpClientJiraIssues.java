@@ -5,6 +5,7 @@ import com.google.common.base.Strings;
 import io.jenkins.plugins.models.JiraIssue;
 import io.jenkins.plugins.models.JiraIssues;
 import io.jenkins.plugins.services.ConfigurationService;
+import io.sentry.Sentry;
 import org.apache.http.Header;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
@@ -60,18 +61,20 @@ public class HttpClientJiraIssues extends HttpClient {
     JiraIssues jiraIssues = new JiraIssues();
 
     String query = URLEncoder.encode("project=JENKINS AND status in (Open, \"In Progress\", Reopened) AND component=" + component, "UTF-8");
-    String jsonInput = getHttpContent("/rest/api/2/search?startAt=" + startAt + "&maxResults=" + maxResults + "&jql=" + query, Collections.emptyList());
+    String url = "/rest/api/2/search?startAt=" + startAt + "&maxResults=" + maxResults + "&jql=" + query;
+    String jsonInput = getHttpContent(url, Collections.emptyList());
     if (Strings.isNullOrEmpty(jsonInput)) {
-      throw new IOException("Empty return value");
+      String msg = "[" + pluginName + "] Empty return value for " + url;
+      logger.debug(msg);
+      Sentry.capture(new Error(msg));
+      return jiraIssues;
     }
 
     JSONObject obj = new JSONObject(jsonInput);
     if (obj.has("errorMessages")) {
-      if (obj.getJSONArray("errorMessages").join("|").contains("\"The value '" + component + "' does not exist for the field 'component'.\"")) {
-        logger.debug("JSON Response with error: " + jsonInput);
-        return jiraIssues;
-      }
-      throw new IOException(jsonInput);
+      logger.debug("[" + pluginName + "] JSON Response with error: " + jsonInput);
+      Sentry.capture(new Error(obj.getJSONArray("errorMessages").join("|")));
+      return jiraIssues;
     }
 
     JSONArray jsonIssues = obj.getJSONArray("issues");

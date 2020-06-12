@@ -52,10 +52,6 @@ node('docker&&linux') {
                             /*settingsFile*/ null,
                             /*addToolEnv*/ false
                           )
-                        /* Copy our war file into the deploy directory for easy
-                         * COPYing into our container
-                         */
-                        sh 'cp target/*.war deploy'
                     }
                 }
 
@@ -71,7 +67,7 @@ node('docker&&linux') {
             def container
             stage('Containerize') {
                 container = docker.build("jenkinsciinfra/plugin-site-api:${env.BUILD_ID}-${shortCommit}",
-                                        '--no-cache --rm deploy')
+                                        '--no-cache --rm')
                 if (pushToDocker) {
                     echo "Pushing container jenkinsciinfra/plugin-site-api:${env.BUILD_ID}-${shortCommit}"
                     infra.withDockerCredentials {

@@ -13,6 +13,7 @@
     <jackson.version>2.6.6</jackson.version>
     <jersey.version>2.23.1</jersey.version>
     <slf4j.version>1.7.21</slf4j.version>
+    <sentry.version>1.7.30</sentry.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -111,29 +112,6 @@
       <version>20160810</version>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
-      <version>${slf4j.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jul-to-slf4j</artifactId>
-      <version>${slf4j.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>log4j-over-slf4j</artifactId>
-      <version>${slf4j.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <version>1.1.7</version>
@@ -182,6 +160,16 @@
       <groupId>com.vladsch.flexmark</groupId>
       <artifactId>flexmark-all</artifactId>
       <version>0.61.30</version>
+    </dependency>
+    <dependency>
+      <groupId>io.sentry</groupId>
+      <artifactId>sentry-logback</artifactId>
+      <version>${sentry.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.sentry</groupId>
+      <artifactId>sentry-spring</artifactId>
+      <version>${sentry.version}</version>
     </dependency>
   </dependencies>
 
