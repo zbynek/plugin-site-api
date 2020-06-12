@@ -72,7 +72,7 @@ public class HttpClientJiraIssues extends HttpClient {
 
     JSONObject obj = new JSONObject(jsonInput);
     if (obj.has("errorMessages")) {
-      logger.debug("[" + pluginName + "] JSON Response with error: " + jsonInput);
+      logger.warn("[" + pluginName + "] JSON Response with error: " + jsonInput);
       Sentry.capture(new Error(obj.getJSONArray("errorMessages").join("|")));
       return jiraIssues;
     }
