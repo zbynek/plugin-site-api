@@ -4,5 +4,4 @@ RUN java -jar $JETTY_HOME/start.jar \
   --create-startd \
   --approve-all-licenses \
   --add-to-start=logging-logback \
-  --module=logging-logback \
-  -Dsystem.properties=io.jenkins.plugins
+  --module=logging-logback
