@@ -25,8 +25,7 @@ public class MissingJiraComponentException extends Exception {
     if (this == o) return true;
     if (!(o instanceof MissingJiraComponentException)) return false;
     MissingJiraComponentException that = (MissingJiraComponentException) o;
-    return pluginName.equals(that.pluginName) &&
-      componentName.equals(that.componentName);
+    return Objects.equals(pluginName, that.pluginName) && Objects.equals(componentName, that.componentName);
   }
 
   @Override
