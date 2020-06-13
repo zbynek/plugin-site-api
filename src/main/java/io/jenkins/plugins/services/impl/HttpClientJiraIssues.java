@@ -1,9 +1,9 @@
 package io.jenkins.plugins.services.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import io.jenkins.plugins.models.JiraIssue;
 import io.jenkins.plugins.models.JiraIssues;
+import io.jenkins.plugins.models.MissingJiraComponentException;
 import io.jenkins.plugins.services.ConfigurationService;
 import io.sentry.Sentry;
 import org.apache.http.Header;
@@ -57,6 +57,7 @@ public class HttpClientJiraIssues extends HttpClient {
 
   public JiraIssues getIssues(String pluginName, int startAt) throws IOException {
     int maxResults = 100;
+    Sentry.getContext().addExtra("plugin-name", pluginName);
     String component = pluginName.replaceAll("-plugin$", "") + "-plugin";
     JiraIssues jiraIssues = new JiraIssues();
 
@@ -73,7 +74,12 @@ public class HttpClientJiraIssues extends HttpClient {
     JSONObject obj = new JSONObject(jsonInput);
     if (obj.has("errorMessages")) {
       logger.warn("[" + pluginName + "] JSON Response with error: " + jsonInput);
-      Sentry.capture(new Error(obj.getJSONArray("errorMessages").join("|")));
+      if (obj.getJSONArray("errorMessages").join("|").contains("\"The value '" + component + "' does not exist for the field 'component'.\"")) {
+        Sentry.capture(new MissingJiraComponentException(pluginName, component));
+      } else {
+        Sentry.capture(new Error(obj.getJSONArray("errorMessages").join("|")));
+      }
+
       return jiraIssues;
     }
 
