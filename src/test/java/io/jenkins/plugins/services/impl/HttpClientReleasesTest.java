@@ -74,6 +74,7 @@ public class HttpClientReleasesTest {
         "lighthouse-report-0.1.0",
         "Lighthouse Report Plugin - 0.1.0",
         Date.from(Instant.ofEpochMilli(1590280223000L)),
+        "https://github.com/jenkinsci/lighthouse-report-plugin/releases/tag/lighthouse-report-0.2",
         "<!-- Optional: add a release summary here -->\r\n\r\n## 🚀 New features and improvements\r\n\r\n* Enable multiple reports (#2) @nishant-gupta\r\n\r\n## 📦 Dependency updates\r\n\r\n* Bump react-lighthouse-viewer from 2.0.0 to 2.8.0 (#7) @dependabot\r\n* [Security] Bump acorn from 5.7.3 to 5.7.4 (#6) @dependabot\r\n* Bump plugin from 3.50 to 4.2 (#3) @dependabot\r\n* Bump babel-eslint from 10.0.3 to 10.1.0 (#5) @dependabot\r\n* Bump react from 16.10.2 to 16.13.1 (#9) @dependabot\r\n* Bump eslint from 6.5.1 to 6.8.0 (#10) @dependabot\r\n"
       ),
       releases.getReleases().get(0)

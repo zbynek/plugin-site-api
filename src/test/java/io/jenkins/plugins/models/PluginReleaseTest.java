@@ -15,6 +15,7 @@ public class PluginReleaseTest {
       "tagName",
       "name",
       new Date(),
+      "https://github.com/jenkinsci/lighthouse-report-plugin/releases/tag/lighthouse-report-0.2",
       "# header1\n## header2\n <script>alert('hi')</script>"
     );
     assertThat(
