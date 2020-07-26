@@ -18,6 +18,8 @@ public interface ConfigurationService {
 
   CredentialsProvider getJiraCredentials();
 
+  CredentialsProvider getGithubCredentials();
+
   String getJiraURL();
 
   String getGithubClientId();

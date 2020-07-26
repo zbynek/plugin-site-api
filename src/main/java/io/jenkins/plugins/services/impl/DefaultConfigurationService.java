@@ -155,6 +155,18 @@ public class DefaultConfigurationService implements ConfigurationService {
     return DefaultConfigurationService._getGithubClientSecret();
   }
 
+  public CredentialsProvider getGithubCredentials() {
+    if (this.getGithubClientId() == null) {
+      logger.warn("No GitHub Client ID specified, using anonymous credentials to access github api");
+    }
+
+    CredentialsProvider credsProvider = new BasicCredentialsProvider();
+    credsProvider.setCredentials(
+      AuthScope.ANY,
+      new UsernamePasswordCredentials(this.getGithubClientId(), this.getGithubClientSecret()));
+    return credsProvider;
+  }
+
   private String getDataFileUrl() {
     if (System.getenv().containsKey("DATA_FILE_URL")) {
       final String url = StringUtils.trimToNull(System.getenv("DATA_FILE_URL"));

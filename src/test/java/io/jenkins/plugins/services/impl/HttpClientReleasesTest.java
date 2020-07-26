@@ -47,7 +47,8 @@ public class HttpClientReleasesTest {
 
   @Before
   public void setUp() {
-      this.httpClientReleases = new HttpClientReleases(new DefaultConfigurationService() {
+    this.httpClientReleases = new HttpClientReleases();
+    this.httpClientReleases.configurationService = new DefaultConfigurationService() {
       @Override
       public String getGithubClientId() {
         return "";
@@ -62,7 +63,7 @@ public class HttpClientReleasesTest {
       public String getGithubApiBase() {
         return wireMockRule.baseUrl();
       }
-    });
+    };
   }
 
   @Test

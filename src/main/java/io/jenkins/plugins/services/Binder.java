@@ -1,9 +1,6 @@
 package io.jenkins.plugins.services;
 
-import io.jenkins.plugins.services.impl.DefaultConfigurationService;
-import io.jenkins.plugins.services.impl.ElasticsearchDatastoreService;
-import io.jenkins.plugins.services.impl.ElasticsearchPrepareDatastoreService;
-import io.jenkins.plugins.services.impl.HttpClientWikiService;
+import io.jenkins.plugins.services.impl.*;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 
 import javax.inject.Singleton;
@@ -29,5 +26,7 @@ public class Binder extends AbstractBinder {
     bind(ElasticsearchDatastoreService.class).to(DatastoreService.class).in(Singleton.class);
     bind(HttpClientWikiService.class).to(WikiService.class).in(Singleton.class);
     bind(ElasticsearchPrepareDatastoreService.class).to(PrepareDatastoreService.class).in(Singleton.class);
+    bind(HttpClientReleases.class).to(HttpClientReleases.class).in(Singleton.class);
+    bind(HttpClientJiraIssues.class).to(HttpClientJiraIssues.class).in(Singleton.class);
   }
 }

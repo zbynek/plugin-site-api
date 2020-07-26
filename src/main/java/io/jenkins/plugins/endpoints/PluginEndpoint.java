@@ -43,6 +43,12 @@ public class PluginEndpoint {
   @Inject
   private ConfigurationService configurationService;
 
+  @Inject
+  private HttpClientReleases httpClientReleases;
+
+  @Inject
+  private HttpClientJiraIssues httpClientJiraIssues;
+
   /**
    * <p>Get a plugin by name</p>
    *
@@ -82,7 +88,7 @@ public class PluginEndpoint {
       if (plugin == null) {
         throw new WebApplicationException(Response.Status.NOT_FOUND);
       }
-      return new HttpClientJiraIssues(configurationService).getIssues(plugin.getName());
+      return httpClientJiraIssues.getIssues(plugin.getName());
     } catch (ServiceException | IOException e) {
       logger.error("Problem getting plugin " + name, e);
       throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
@@ -103,7 +109,7 @@ public class PluginEndpoint {
       if (plugin == null) {
         throw new WebApplicationException(Response.Status.NOT_FOUND);
       }
-      return new HttpClientReleases(this.configurationService).getReleases(plugin);
+      return httpClientReleases.getReleases(plugin);
     } catch (ServiceException | IOException e) {
       logger.error("Problem getting plugin releases " + name, e);
       throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);

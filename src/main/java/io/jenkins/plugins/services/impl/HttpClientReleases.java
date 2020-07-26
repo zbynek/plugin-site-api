@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,22 +22,7 @@ public class HttpClientReleases extends HttpClient {
   private static final ObjectMapper objectMapper = new ObjectMapper();
   private Logger logger = LoggerFactory.getLogger(PluginEndpoint.class);
 
-  private final ConfigurationService configurationService;
-
-  public HttpClientReleases(ConfigurationService configurationService) {
-    super();
-    this.configurationService = configurationService;
-  }
-
-
   public PluginReleases getReleases(Plugin plugin) throws IOException {
-    String clientId = this.configurationService.getGithubClientId();
-    String clientSecret = this.configurationService.getGithubClientSecret();
-
-    if (clientId == null) {
-      logger.warn("No GitHub Client ID specified, using anonymous credentials to access github api");
-    }
-
     final String[] scmUrl = StringUtils.removeEnd(
       plugin.getScm().getLink().replaceAll("https://github.com/", "").replaceAll( "http://github.com/", ""),
       "/"
@@ -48,12 +34,10 @@ public class HttpClientReleases extends HttpClient {
     }
 
     final String URL = String.format(
-      "%s/repos/%s/%s/releases?client_id=%s&client_secret=%s",
+      "%s/repos/%s/%s/releases",
       this.configurationService.getGithubApiBase(),
       scmUrl[0],
-      scmUrl[1],
-      clientId,
-      clientSecret
+      scmUrl[1]
     );
 
     String jsonInput = this.getHttpContent(URL, Collections.emptyList());

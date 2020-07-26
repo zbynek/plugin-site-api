@@ -22,22 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class HttpClientJiraIssues extends HttpClient {
-  private final ConfigurationService configurationService;
   private Logger logger = LoggerFactory.getLogger(HttpClientJiraIssues.class);
-
-  public HttpClientJiraIssues(ConfigurationService configurationService) {
-    this.configurationService = configurationService;
-  }
-
-  @Override
-  protected CloseableHttpClient getHttpClient() {
-    final RequestConfig requestConfig = RequestConfig.copy(RequestConfig.DEFAULT)
-      .setConnectionRequestTimeout(5000)
-      .setConnectTimeout(5000)
-      .setSocketTimeout(5000)
-      .build();
-    return HttpClients.custom().setDefaultCredentialsProvider(this.configurationService.getJiraCredentials()).setDefaultRequestConfig(requestConfig).build();
-  }
 
   @Override
   public String getHttpContent(String url, List<Header> headers) {

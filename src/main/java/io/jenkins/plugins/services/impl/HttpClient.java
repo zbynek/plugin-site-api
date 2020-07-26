@@ -1,5 +1,6 @@
 package io.jenkins.plugins.services.impl;
 
+import io.jenkins.plugins.services.ConfigurationService;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
@@ -7,11 +8,13 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -19,19 +22,34 @@ import java.util.List;
 public class HttpClient {
   protected Logger logger = LoggerFactory.getLogger(HttpClient.class);
 
-  protected CloseableHttpClient getHttpClient() {
+  @Inject
+  protected ConfigurationService configurationService;
+
+  protected CloseableHttpClient getHttpClient(String url) {
     final RequestConfig requestConfig = RequestConfig.copy(RequestConfig.DEFAULT)
       .setConnectionRequestTimeout(5000)
       .setConnectTimeout(5000)
       .setSocketTimeout(5000)
       .build();
-    return HttpClients.custom().setDefaultRequestConfig(requestConfig).build();
+    HttpClientBuilder httpClientBuilder = HttpClients.custom();
+    if (url.startsWith(this.configurationService.getGithubApiBase())) {
+      httpClientBuilder.setDefaultCredentialsProvider(this.configurationService.getGithubCredentials());
+    } else if (url.startsWith(this.configurationService.getJiraURL())) {
+      httpClientBuilder.setDefaultCredentialsProvider(this.configurationService.getJiraCredentials());
+    }
+
+    return httpClientBuilder.setDefaultRequestConfig(requestConfig).build();
+  }
+
+  protected HttpClient() {
   }
 
   public String getHttpContent(String url, List<Header> headers) {
     final HttpGet get = new HttpGet(url);
     headers.stream().forEach(get::setHeader);
-    try (final CloseableHttpClient httpClient = getHttpClient();
+
+
+    try (final CloseableHttpClient httpClient = getHttpClient(url);
          final CloseableHttpResponse response = httpClient.execute(get)) {
       if (this.isValidStatusCode(response.getStatusLine().getStatusCode())) {
         final HttpEntity entity = response.getEntity();
