@@ -3,6 +3,7 @@ package io.jenkins.plugins.services.impl;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import io.jenkins.plugins.services.ConfigurationService;
 import io.jenkins.plugins.services.ServiceException;
 import io.jenkins.plugins.services.WikiService;
 import org.apache.commons.lang3.StringUtils;

@@ -21,8 +21,7 @@ public abstract class GithubExtractor implements WikiExtractor {
   public static final String BOOTSTRAP_PADDING_5 = "p-5";
   private static final Logger LOGGER = LoggerFactory.getLogger(GithubReadmeExtractor.class);
 
-  private static final String API_URL_PATTERN =
-      "https://api.github.com/repos/jenkinsci/%s/%s?ref=%s&client_id=%s&client_secret=%s";
+  private static final String API_URL_PATTERN = "https://api.github.com/repos/jenkinsci/%s/%s?ref=%s";
 
   @Override
   public String getApiUrl(String wikiUrl) {
@@ -31,16 +30,7 @@ public abstract class GithubExtractor implements WikiExtractor {
       return null;
     }
 
-    String clientId = DefaultConfigurationService._getGithubClientId();
-    String clientSecret = DefaultConfigurationService._getGithubClientSecret();
-
-    if (clientId == null) {
-      LOGGER.warn("Cannot retrieve API URL for {0}. No GitHub Client ID specified", wikiUrl);
-      return null;
-    }
-
-    return String.format(API_URL_PATTERN, matcher.getRepo(),
-        matcher.getEndpoint(), matcher.getBranch(), clientId, clientSecret);
+    return String.format(API_URL_PATTERN, matcher.getRepo(), matcher.getEndpoint(), matcher.getBranch());
   }
 
   @Override

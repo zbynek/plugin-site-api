@@ -1,11 +1,6 @@
 package io.jenkins.plugins.services;
 
-import io.jenkins.plugins.services.impl.ConfluenceApiExtractor;
-import io.jenkins.plugins.services.impl.ConfluenceDirectExtractor;
-import io.jenkins.plugins.services.impl.GithubContentsExtractor;
-import io.jenkins.plugins.services.impl.GithubReadmeExtractor;
-import io.jenkins.plugins.services.impl.HttpClientWikiService;
-import io.jenkins.plugins.services.impl.WikiExtractor;
+import io.jenkins.plugins.services.impl.*;
 
 import org.apache.commons.io.FileUtils;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -16,6 +11,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.File;
@@ -29,7 +25,13 @@ public class WikiServiceTest {
 
   @Before
   public void setUp() {
-    wikiService = new HttpClientWikiService();
+    wikiService = new HttpClientWikiService() {
+      @Override
+      public void postConstruct() {
+        super.postConstruct();
+        this.configurationService = new DefaultConfigurationService();
+      }
+    };
     wikiService.postConstruct();
   }
 
@@ -50,7 +52,7 @@ public class WikiServiceTest {
     testGetWikiContentGit("https://github.com/jenkinsci/configuration-as-code-plugin/tree/configuration-as-code-1.30");
   }
 
-  @Test 
+  @Test
   public void testGetWikiContentGitCustom() {
     testGetWikiContentGit("https://github.com/jenkinsci/credentials-plugin/blob/credentials-2.3.0/docs/README.adoc");
   }
@@ -104,7 +106,7 @@ public class WikiServiceTest {
   public void testCleanWikiContentGithub() throws IOException {
     final File file = new File("src/test/resources/github_content.html");
     final String content = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-    final String cleanContent = new GithubReadmeExtractor().extractHtml(content, 
+    final String cleanContent = new GithubReadmeExtractor().extractHtml(content,
         "https://github.com/jenkinsci/configuration-as-code-plugin", wikiService);
     Assert.assertNotNull("Wiki content is null", cleanContent);
     assertAllLinksMatch(cleanContent, "(#|https?://).*", "https?://.*");
@@ -114,7 +116,7 @@ public class WikiServiceTest {
   public void testCleanWikiExcerptGithub() throws IOException {
     final File file = new File("src/test/resources/github_excerpt.html");
     final String content = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-    final String cleanContent = new GithubReadmeExtractor().extractHtml(content, 
+    final String cleanContent = new GithubReadmeExtractor().extractHtml(content,
         "https://github.com/jenkinsci/configuration-as-code-plugin", wikiService);
     Assert.assertNotNull("Wiki content is null", cleanContent);
     String hrefRegexp = "#getting-started|https://github.com/jenkinsci/configuration-as-code-plugin/blob/master/.*";
@@ -122,7 +124,7 @@ public class WikiServiceTest {
          + "|https://camo.githubusercontent.com/[a-z0-9]*/[a-z0-9]*";
     assertAllLinksMatch(cleanContent, hrefRegexp, srcRegexp);
   }
-  
+
   private void assertAllLinksMatch(String content, String hrefRegexp, String srcRegexp) {
     final Document html = Jsoup.parseBodyFragment(content);
     html.getElementsByAttribute("href").forEach(element -> {
@@ -195,7 +197,7 @@ public class WikiServiceTest {
     assertInvalid(githubApi, "https://github.com/other-org/repo");
     assertInvalid(githubApi, "https://github.com/jenkinsci/xyz/blob/file.md");
   }
-  
+
   @Test
   public void testGithubContentsExtractor() {
     System.setProperty("github.client.id", "dummy");

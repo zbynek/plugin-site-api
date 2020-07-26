@@ -1,7 +1,7 @@
 {
   "id" : "b78085ca-3274-368d-8d25-96b06e0b3551",
   "request" : {
-    "url" : "/repos/jenkinsci/lighthouse-report-plugin/releases?client_id=&client_secret=",
+    "url" : "/repos/jenkinsci/lighthouse-report-plugin/releases",
     "method" : "GET"
   },
   "response" : {

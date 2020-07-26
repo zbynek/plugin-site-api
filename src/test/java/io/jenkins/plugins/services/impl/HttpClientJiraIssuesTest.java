@@ -22,7 +22,8 @@ public class HttpClientJiraIssuesTest {
   @Before
   public void setUp() {
 
-    this.httpClientJiraIssues = new HttpClientJiraIssues(new DefaultConfigurationService() {
+    this.httpClientJiraIssues = new HttpClientJiraIssues();
+    this.httpClientJiraIssues.configurationService = new DefaultConfigurationService() {
       @Override
       protected String getJiraUsername() {
         String username = super.getJiraUsername();
@@ -45,7 +46,7 @@ public class HttpClientJiraIssuesTest {
       public String getJiraURL() {
         return wireMockRule.baseUrl();
       }
-    });
+    };
   }
 
   @Test
