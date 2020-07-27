@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import io.jenkins.plugins.services.ServiceException;
 import org.apache.http.Header;
 
 public interface WikiExtractor {
@@ -20,7 +21,8 @@ public interface WikiExtractor {
    * </p>
    *
    * @param apiContent content retrieved from API
-   * @param documentation URL
+   * @param url documentation URL
+   * @param service Client Wiki Service to use to get the content
    * @return cleaned content
    * @throws ServiceException in case something goes wrong
    */

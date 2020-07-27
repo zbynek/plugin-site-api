@@ -23,6 +23,8 @@ public interface PrepareDatastoreService {
 
   /**
    * <p>Time the current index was created</p>
+   *
+   * @return LocalDateTime Time the current index was created
    */
   LocalDateTime getCurrentCreatedAt();
 
