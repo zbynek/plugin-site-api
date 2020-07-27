@@ -13,15 +13,26 @@ import com.vladsch.flexmark.ext.tables.TablesExtension;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.data.MutableDataSet;
+import io.jenkins.plugins.endpoints.PluginEndpoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Date;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PluginRelease {
-  private static final HtmlRenderer HTML_RENDERER;
-  private static final Parser MARKDOWN_PARSER;
-  static {
+  private Logger logger = LoggerFactory.getLogger(PluginRelease.class);
+
+  @JsonProperty("tag_name") final private String tagName;
+  @JsonProperty("name") final private String name;
+  @JsonProperty("published_at") final private Date publishedAt;
+  @JsonProperty("html_url") final private String htmlUrl;
+  private String body;
+
+  @JsonProperty("bodyHTML") public String getBodyHTML() {
     MutableDataSet options = new MutableDataSet();
 
     options.set(Parser.EXTENSIONS, Arrays.asList(
@@ -33,25 +44,24 @@ public class PluginRelease {
       EmojiExtension.create()
     ));
     options.set(EmojiExtension.USE_SHORTCUT_TYPE, EmojiShortcutType.GITHUB);
+    try {
+      options.set(GfmIssuesExtension.GIT_HUB_ISSUES_URL_ROOT, new URI(this.htmlUrl + "/../../../issues").normalize().toString());
+    } catch (URISyntaxException e) {
+      logger.error("Unable to process html_url", e);
+    }
 
-    MARKDOWN_PARSER = Parser.builder(options).build();
-    HTML_RENDERER = HtmlRenderer.builder(options).escapeHtml(true).build();
-  }
-  @JsonProperty("tag_name") final private String tagName;
-  @JsonProperty("name") final private String name;
-  @JsonProperty("published_at") final private Date publishedAt;
-  private String body;
-
-  @JsonProperty("bodyHTML") public String getBodyHTML() {
-    return HTML_RENDERER.render(MARKDOWN_PARSER.parse(this.body.replaceAll("<!--.*?-->", "")));
+    HtmlRenderer htmlRenderer = HtmlRenderer.builder(options).escapeHtml(true).build();
+    Parser markdownParser = Parser.builder(options).build();
+    return htmlRenderer.render(markdownParser.parse(this.body.replaceAll("<!--.*?-->", "")));
   }
 
 
   @JsonCreator
-  public PluginRelease(@JsonProperty("tag_name") String tagName, @JsonProperty("name") String name, @JsonProperty("published_at") Date publishedAt, @JsonProperty("body") String body) {
+  public PluginRelease(@JsonProperty("tag_name") String tagName, @JsonProperty("name") String name, @JsonProperty("published_at") Date publishedAt, @JsonProperty("html_url") String htmlUrl, @JsonProperty("body") String body) {
     this.tagName = tagName;
     this.name = name;
     this.publishedAt = publishedAt;
+    this.htmlUrl = htmlUrl;
     this.body = body;
   }
 
