@@ -1,29 +1,37 @@
 package io.jenkins.plugins.services.impl;
 
 import io.jenkins.plugins.commons.JsonObjectMapper;
+import io.jenkins.plugins.commons.JwtHelper;
 import io.jenkins.plugins.models.GeneratedPluginData;
 import io.jenkins.plugins.services.ConfigurationService;
 import io.jenkins.plugins.services.ServiceException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
-import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicHeader;
+import org.kohsuke.github.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
+
+import static io.jenkins.plugins.commons.JwtHelper.createJWT;
 
 /**
  * <p>Default implementation of <code>ConfigurationService</code></p>
@@ -40,6 +48,9 @@ public class DefaultConfigurationService implements ConfigurationService {
 
   private ModifyType modifyType;
   private String modifyValue;
+
+  private transient String cachedToken;
+  private transient long tokenCacheTime;
 
   public DefaultConfigurationService() {
     this.modifyType = null;
@@ -123,48 +134,96 @@ public class DefaultConfigurationService implements ConfigurationService {
     return StringUtils.trimToNull(System.getenv("JIRA_PASSWORD"));
   }
 
-  public CredentialsProvider getJiraCredentials() {
-    CredentialsProvider credsProvider = new BasicCredentialsProvider();
-    credsProvider.setCredentials(
-      AuthScope.ANY,
-      new UsernamePasswordCredentials(this.getJiraUsername(), this.getJiraPassword()));
-    return credsProvider;
+  public List<Header> getJiraCredentials() {
+    String encoding = Base64.getEncoder().encodeToString((this.getJiraUsername() + ":" + this.getJiraPassword()).getBytes());
+    return Collections.singletonList(new BasicHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoding));
   }
 
-  public static String _getGithubClientId() {
-    String clientId = StringUtils.trimToNull(System.getenv("GITHUB_CLIENT_ID"));
-    if (clientId != null) {
-      return clientId;
+  @SuppressWarnings("deprecation") // preview features are required for GitHub app integration, GitHub api adds deprecated to all preview methods
+  String generateAppInstallationToken(String appId, String appPrivateKey) {
+    try {
+      String jwtToken = createJWT(appId, appPrivateKey);
+      GitHub gitHubApp = new GitHubBuilder().withEndpoint(this.getGithubApiBase())
+        .withJwtToken(jwtToken)
+        .build();
+
+      GHApp app = gitHubApp.getApp();
+
+      List<GHAppInstallation> appInstallations = app.listInstallations().asList();
+      if (appInstallations.isEmpty()) {
+        throw new IllegalArgumentException(String.format("Couldn't authenticate with GitHub app ID %s", appId));
+      }
+      GHAppInstallation appInstallation;
+      if (appInstallations.size() == 1) {
+        appInstallation = appInstallations.get(0);
+      } else {
+        appInstallation = appInstallations.stream()
+          // .filter(installation -> installation.getAccount().getLogin().equals(owner))
+          .findAny()
+          .orElseThrow(() -> new IllegalArgumentException(String.format("Couldn't authenticate with GitHub app ID %s", appId)));
+      }
+
+      GHAppInstallationToken appInstallationToken = appInstallation
+        .createToken(appInstallation.getPermissions())
+        .create();
+
+      return appInstallationToken.getToken();
+    } catch (IOException e) {
+      throw new IllegalArgumentException(String.format("Couldn't authenticate with GitHub app ID %s", appId), e);
     }
-    return StringUtils.trimToNull(System.getProperty("github.client.id"));
   }
 
-  public String getGithubClientId() {
-    return DefaultConfigurationService._getGithubClientId();
-  }
-
-  public static String _getGithubClientSecret() {
-    String clientId = StringUtils.trimToNull(System.getenv("GITHUB_SECRET"));
-    if (clientId != null) {
-      return clientId;
+  public String getGithubAppId() {
+    String appId = StringUtils.trimToNull(System.getenv("GITHUB_APP_ID"));
+    if (appId != null) {
+      return appId;
     }
-    return StringUtils.trimToNull(System.getProperty("github.client.secret"));
+    return StringUtils.trimToNull(System.getProperty("github.app.id"));
   }
 
-  public String getGithubClientSecret() {
-    return DefaultConfigurationService._getGithubClientSecret();
+  public String getGithubToken() {
+    String token = StringUtils.trimToNull(System.getenv("GITHUB_TOKEN"));
+    if (token != null) {
+      return token;
+    }
+    return StringUtils.trimToNull(System.getProperty("github.token"));
   }
 
-  public CredentialsProvider getGithubCredentials() {
-    if (this.getGithubClientId() == null) {
-      logger.warn("No GitHub Client ID specified, using anonymous credentials to access github api");
+
+  public String getGithubAppPrivateKey() {
+    String filePath = StringUtils.trimToNull(System.getenv("GITHUB_APP_PRIVATE_KEY"));
+    if (filePath == null) {
+      filePath = StringUtils.trimToNull(System.getProperty("github.app.private_key"));
+    }
+    if (filePath != null) {
+      try {
+        return new String(Files.readAllBytes(Paths.get(filePath)), StandardCharsets.UTF_8);
+      } catch (IOException e) {
+        logger.error("Unable to read private key", e);
+      }
+    }
+    return null;
+  }
+
+  public List<Header> getGithubCredentials() {
+    if (this.getGithubAppId() != null) {
+      long now = System.currentTimeMillis();
+      String appInstallationToken;
+      if (cachedToken != null && now - tokenCacheTime < JwtHelper.VALIDITY_MS /* extra buffer */ / 2) {
+        appInstallationToken = cachedToken;
+      } else {
+        appInstallationToken = generateAppInstallationToken(this.getGithubAppId(), this.getGithubAppPrivateKey());
+        cachedToken = appInstallationToken;
+        tokenCacheTime = now;
+      }
+      return Collections.singletonList(new BasicHeader(HttpHeaders.AUTHORIZATION, "Bearer " + appInstallationToken));
+    }
+    if (this.getGithubToken() != null) {
+      return Collections.singletonList(new BasicHeader(HttpHeaders.AUTHORIZATION, "Bearer " + this.getGithubToken()));
     }
 
-    CredentialsProvider credsProvider = new BasicCredentialsProvider();
-    credsProvider.setCredentials(
-      AuthScope.ANY,
-      new UsernamePasswordCredentials(this.getGithubClientId(), this.getGithubClientSecret()));
-    return credsProvider;
+    logger.warn("No GitHub Client ID specified, using anonymous credentials to access github api");
+    return Collections.emptyList();
   }
 
   private String getDataFileUrl() {
@@ -182,6 +241,7 @@ public class DefaultConfigurationService implements ConfigurationService {
       return url;
     }
   }
+
   private String readGzipFile(final File file) {
     try(final BufferedReader reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(file)), StandardCharsets.UTF_8))) {
       return reader.lines().collect(Collectors.joining());

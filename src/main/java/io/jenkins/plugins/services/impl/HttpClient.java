@@ -47,7 +47,11 @@ public class HttpClient {
   public String getHttpContent(String url, List<Header> headers) {
     final HttpGet get = new HttpGet(url);
     headers.stream().forEach(get::setHeader);
-
+    if (url.startsWith(this.configurationService.getGithubApiBase())) {
+      this.configurationService.getGithubCredentials().stream().forEach(get::setHeader);;
+    } else if (url.startsWith(this.configurationService.getJiraURL())) {
+      this.configurationService.getJiraCredentials().stream().forEach(get::setHeader);
+    }
 
     try (final CloseableHttpClient httpClient = getHttpClient(url);
          final CloseableHttpResponse response = httpClient.execute(get)) {
