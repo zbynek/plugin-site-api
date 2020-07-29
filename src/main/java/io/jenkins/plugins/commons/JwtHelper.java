@@ -14,6 +14,7 @@ import java.util.Date;
 import static java.util.Objects.requireNonNull;
 import java.util.concurrent.TimeUnit;
 
+// taken almost in its entirety from https://github.com/jenkinsci/github-branch-source-plugin/blob/07b69ab4f9d9ed718416ac63af67102de5e172fa/src/main/java/org/jenkinsci/plugins/github_branch_source/JwtHelper.java
 public class JwtHelper {
   public static class InvalidPrivateKeyException extends RuntimeException {
 

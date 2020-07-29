@@ -139,6 +139,7 @@ public class DefaultConfigurationService implements ConfigurationService {
     return Collections.singletonList(new BasicHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoding));
   }
 
+  // borrowed from https://github.com/jenkinsci/github-branch-source-plugin/blob/07b69ab4f9d9ed718416ac63af67102de5e172fa/src/main/java/org/jenkinsci/plugins/github_branch_source/GitHubAppCredentials.java#L107
   @SuppressWarnings("deprecation") // preview features are required for GitHub app integration, GitHub api adds deprecated to all preview methods
   String generateAppInstallationToken(String appId, String appPrivateKey) {
     try {

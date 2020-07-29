@@ -32,12 +32,6 @@ public class HttpClient {
       .setSocketTimeout(5000)
       .build();
     HttpClientBuilder httpClientBuilder = HttpClients.custom();
-    if (url.startsWith(this.configurationService.getGithubApiBase())) {
-      httpClientBuilder.setDefaultCredentialsProvider(this.configurationService.getGithubCredentials());
-    } else if (url.startsWith(this.configurationService.getJiraURL())) {
-      httpClientBuilder.setDefaultCredentialsProvider(this.configurationService.getJiraCredentials());
-    }
-
     return httpClientBuilder.setDefaultRequestConfig(requestConfig).build();
   }
 
