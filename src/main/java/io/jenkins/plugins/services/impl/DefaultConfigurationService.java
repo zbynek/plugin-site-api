@@ -154,15 +154,9 @@ public class DefaultConfigurationService implements ConfigurationService {
       if (appInstallations.isEmpty()) {
         throw new IllegalArgumentException(String.format("Couldn't authenticate with GitHub app ID %s", appId));
       }
-      GHAppInstallation appInstallation;
-      if (appInstallations.size() == 1) {
-        appInstallation = appInstallations.get(0);
-      } else {
-        appInstallation = appInstallations.stream()
-          // .filter(installation -> installation.getAccount().getLogin().equals(owner))
+      GHAppInstallation appInstallation = appInstallations.stream()
           .findAny()
           .orElseThrow(() -> new IllegalArgumentException(String.format("Couldn't authenticate with GitHub app ID %s", appId)));
-      }
 
       GHAppInstallationToken appInstallationToken = appInstallation
         .createToken(appInstallation.getPermissions())
