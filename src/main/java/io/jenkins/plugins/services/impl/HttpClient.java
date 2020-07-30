@@ -50,6 +50,11 @@ public class HttpClient {
 
     try (final CloseableHttpClient httpClient = getHttpClient(url);
          final CloseableHttpResponse response = httpClient.execute(get)) {
+      for (Header header : response.getAllHeaders()) {
+        if (header.getName().toLowerCase().contains("github")) {
+          logger.debug(url + ": " + header.getName() + ": " + header.getValue());
+        }
+      }
       if (this.isValidStatusCode(response.getStatusLine().getStatusCode())) {
         final HttpEntity entity = response.getEntity();
         final String html = EntityUtils.toString(entity, StandardCharsets.UTF_8);
