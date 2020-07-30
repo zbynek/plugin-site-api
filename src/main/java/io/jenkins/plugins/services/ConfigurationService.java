@@ -1,7 +1,9 @@
 package io.jenkins.plugins.services;
 
 import io.jenkins.plugins.models.GeneratedPluginData;
-import org.apache.http.client.CredentialsProvider;
+import org.apache.http.Header;
+
+import java.util.List;
 
 /**
  * <p>Get various configuration pieces for the application</p>
@@ -16,15 +18,11 @@ public interface ConfigurationService {
      */
   GeneratedPluginData getIndexData() throws ServiceException;
 
-  CredentialsProvider getJiraCredentials();
+  List<Header> getJiraCredentials();
 
-  CredentialsProvider getGithubCredentials();
+  List<Header> getGithubCredentials();
 
   String getJiraURL();
-
-  String getGithubClientId();
-
-  String getGithubClientSecret();
 
   String getGithubApiBase();
 }

@@ -23,7 +23,6 @@ system, the following commands will run the tests properly:
 Inspect the `Makefile` for more targets, such as `all` which will run tests and
 build a working container.
 
-
 == Architecture
 
 The REST API calls are powered by Jersey 2.x running inside of Tomcat 8. Plugins
@@ -47,19 +46,36 @@ contains new data. If so the application will the reindex the Elasticsearch data
 == Run Local Plugin Site API
 
 ----
-GITHUB_CLIENT_ID="dummy"
+GITHUB_TOKEN=token from https://github.com/settings/tokens
 DATA_FILE_URL="https://ci.jenkins.io/job/Infra/job/plugin-site-api/job/generate-data/lastSuccessfulBuild/artifact/plugins.json.gzip" mvn jetty:run
 ----
 
 This will launch an embedded Jetty container accessible at `http://localhost:8080`.
 `DATA_FILE_URL` can point to `http`/`https` URLS or to local files using the `file://${path}` syntax.
-If `GITHUB_CLIENT_ID` is not valid GitHub Oauth App client ID, your site will be limited to fetching 60 plugin documentation pages per hour.
+
+If `GITHUB_APP_ID` and `GITHUB_APP_PRIVATE_KEY` are not set it will try to use a personal access token provided by `GITHUB_TOKEN` and failing that, your site will be limited to fetching 60 plugin documentation pages per hour.
+
+== Run in production mode
+
+You can still use the GITHUB_TOKEN method, but preference is to use github apps (https://github.com/settings/apps)
+Make sure your pem file is convered from the format github apps gives you to the PKCS#8 format by running
+
+----
+openssl pkcs8 -topk8 -inform PEM -outform PEM -in devpluginsjenkinsio.2020-07-28.private-key.pem -out githubapp.pem -nocrypt
+----
+
+Then configure it by
+
+----
+GITHUB_APP_ID=1234
+GITHUB_APP_PRIVATE_KEY="/path/to/pem/file"
+---
 
 == Run Docker Plugin Site API
 
 ----
 docker build -t jenkinsciinfra/plugin-site-api .
-docker run -p 8080:8080 -it -e DATA_FILE_URL="http://url.to/plugins.json.gzip" -e GITHUB_CLIENT_ID="dummy" jenkinsciinfra/plugin-site-api
+docker run -p 8080:8080 -it -e DATA_FILE_URL="http://url.to/plugins.json.gzip" jenkinsciinfra/plugin-site-api
 ----
 
 == Rebuild Elasticsearch data
@@ -716,10 +732,8 @@ Sample Response
 == Deployment to production
 
 This project is containerized via the `Dockerfile` that is located in the
-`deploy/` directory. The `Jenkinsfile` uses this `Dockerfile` in conjunction
-with the front-end code located in the
-link:https://github.com/jenkins-infra/plugin-site[jenkins-infra/plugin-site]
-repository to create a container fit for deployment.
+`deploy/` directory. The `Jenkinsfile` uses this `Dockerfile` create a container
+fit for deployment.
 
 Unfortunately, the build of this container must occur on a Jenkins cluster
 which is publicly inaccessible for security reasons. The private job polls SCM
@@ -732,8 +746,8 @@ Deploying:
 . Verify that a new container tag has been published
   link:https://hub.docker.com/r/jenkinsciinfra/plugin-site-api/tags/[here].
 . Submit a pull request to the
-  link:https://github.com/jenkins-infra/jenkins-infra[jenkins-infra/jenkins-infra]
-  repository updating the `profile::pluginsite::image_tag` value to the latest
+  link:https://github.com/jenkins-infra/jenkins-infra[jenkins-infra/charts]
+  repository updating the `backend.image.tag` value to the latest
   container's tag
-  (link:https://github.com/jenkins-infra/jenkins-infra/blob/bbfad9c04d5233d322a9e61aa9ab38890ab9991a/hieradata/common.yaml#L246[here])
+  (link:https://github.com/jenkins-infra/charts/blob/5e02db1ad84ac0634d256da155717b7664be1849/charts/plugin-site/values.yaml#L10[here])
 . Once that is merged the changes will be live

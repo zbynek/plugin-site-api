@@ -22,8 +22,12 @@ import java.util.List;
 public class HttpClient {
   protected Logger logger = LoggerFactory.getLogger(HttpClient.class);
 
+  protected final ConfigurationService configurationService;
+
   @Inject
-  protected ConfigurationService configurationService;
+  protected HttpClient(ConfigurationService configurationService) {
+    this.configurationService = configurationService;
+  }
 
   protected CloseableHttpClient getHttpClient(String url) {
     final RequestConfig requestConfig = RequestConfig.copy(RequestConfig.DEFAULT)
@@ -32,25 +36,25 @@ public class HttpClient {
       .setSocketTimeout(5000)
       .build();
     HttpClientBuilder httpClientBuilder = HttpClients.custom();
-    if (url.startsWith(this.configurationService.getGithubApiBase())) {
-      httpClientBuilder.setDefaultCredentialsProvider(this.configurationService.getGithubCredentials());
-    } else if (url.startsWith(this.configurationService.getJiraURL())) {
-      httpClientBuilder.setDefaultCredentialsProvider(this.configurationService.getJiraCredentials());
-    }
-
     return httpClientBuilder.setDefaultRequestConfig(requestConfig).build();
-  }
-
-  protected HttpClient() {
   }
 
   public String getHttpContent(String url, List<Header> headers) {
     final HttpGet get = new HttpGet(url);
     headers.stream().forEach(get::setHeader);
-
+    if (url.startsWith(this.configurationService.getGithubApiBase())) {
+      this.configurationService.getGithubCredentials().stream().forEach(get::setHeader);;
+    } else if (url.startsWith(this.configurationService.getJiraURL())) {
+      this.configurationService.getJiraCredentials().stream().forEach(get::setHeader);
+    }
 
     try (final CloseableHttpClient httpClient = getHttpClient(url);
          final CloseableHttpResponse response = httpClient.execute(get)) {
+      for (Header header : response.getAllHeaders()) {
+        if (header.getName().toLowerCase().contains("github")) {
+          logger.debug(url + ": " + header.getName() + ": " + header.getValue());
+        }
+      }
       if (this.isValidStatusCode(response.getStatusLine().getStatusCode())) {
         final HttpEntity entity = response.getEntity();
         final String html = EntityUtils.toString(entity, StandardCharsets.UTF_8);

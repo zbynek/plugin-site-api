@@ -22,6 +22,11 @@ public class HttpClientReleases extends HttpClient {
   private static final ObjectMapper objectMapper = new ObjectMapper();
   private Logger logger = LoggerFactory.getLogger(PluginEndpoint.class);
 
+  @Inject
+  public HttpClientReleases(ConfigurationService configurationService) {
+    super(configurationService);
+  }
+
   public PluginReleases getReleases(Plugin plugin) throws IOException {
     final String[] scmUrl = StringUtils.removeEnd(
       plugin.getScm().getLink().replaceAll("https://github.com/", "").replaceAll( "http://github.com/", ""),

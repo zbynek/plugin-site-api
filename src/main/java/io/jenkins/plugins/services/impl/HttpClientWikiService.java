@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -42,6 +43,11 @@ public class HttpClientWikiService extends HttpClient implements WikiService {
       WIKI_URLS.add(new ConfluenceDirectExtractor());
       WIKI_URLS.add(new GithubReadmeExtractor());
       WIKI_URLS.add(new GithubContentsExtractor());
+  }
+
+  @Inject
+  public HttpClientWikiService(ConfigurationService configurationService) {
+      super(configurationService);
   }
 
   @PostConstruct
