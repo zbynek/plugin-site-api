@@ -4,13 +4,18 @@ import io.jenkins.plugins.models.Plugin;
 import io.jenkins.plugins.models.PluginRelease;
 import io.jenkins.plugins.models.PluginReleases;
 import io.jenkins.plugins.models.Scm;
+import org.apache.http.Header;
+import org.apache.http.HttpHeaders;
+import org.apache.http.message.BasicHeader;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -47,23 +52,17 @@ public class HttpClientReleasesTest {
 
   @Before
   public void setUp() {
-    this.httpClientReleases = new HttpClientReleases();
-    this.httpClientReleases.configurationService = new DefaultConfigurationService() {
+    this.httpClientReleases = new HttpClientReleases(new DefaultConfigurationService() {
       @Override
-      public String getGithubClientId() {
-        return "";
-      }
-
-      @Override
-      public String getGithubClientSecret() {
-        return "";
+      public List<Header> getGithubCredentials() {
+        return Collections.singletonList(new BasicHeader(HttpHeaders.AUTHORIZATION, "Bearer faketoken"));
       }
 
       @Override
       public String getGithubApiBase() {
         return wireMockRule.baseUrl();
       }
-    };
+    });
   }
 
   @Test

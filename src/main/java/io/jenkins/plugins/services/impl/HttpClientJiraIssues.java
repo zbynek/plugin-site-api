@@ -8,14 +8,12 @@ import io.jenkins.plugins.services.ConfigurationService;
 import io.sentry.Sentry;
 import org.apache.http.Header;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Collections;
@@ -23,6 +21,11 @@ import java.util.List;
 
 public class HttpClientJiraIssues extends HttpClient {
   private Logger logger = LoggerFactory.getLogger(HttpClientJiraIssues.class);
+
+  @Inject
+  public HttpClientJiraIssues(ConfigurationService configurationService) {
+    super(configurationService);
+  }
 
   @Override
   public String getHttpContent(String url, List<Header> headers) {

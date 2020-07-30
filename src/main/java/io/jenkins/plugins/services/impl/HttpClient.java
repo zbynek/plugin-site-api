@@ -22,8 +22,12 @@ import java.util.List;
 public class HttpClient {
   protected Logger logger = LoggerFactory.getLogger(HttpClient.class);
 
+  protected final ConfigurationService configurationService;
+
   @Inject
-  protected ConfigurationService configurationService;
+  protected HttpClient(ConfigurationService configurationService) {
+    this.configurationService = configurationService;
+  }
 
   protected CloseableHttpClient getHttpClient(String url) {
     final RequestConfig requestConfig = RequestConfig.copy(RequestConfig.DEFAULT)
@@ -33,9 +37,6 @@ public class HttpClient {
       .build();
     HttpClientBuilder httpClientBuilder = HttpClients.custom();
     return httpClientBuilder.setDefaultRequestConfig(requestConfig).build();
-  }
-
-  protected HttpClient() {
   }
 
   public String getHttpContent(String url, List<Header> headers) {

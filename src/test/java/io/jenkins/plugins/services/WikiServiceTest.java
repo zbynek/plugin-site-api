@@ -25,13 +25,7 @@ public class WikiServiceTest {
 
   @Before
   public void setUp() {
-    wikiService = new HttpClientWikiService() {
-      @Override
-      public void postConstruct() {
-        super.postConstruct();
-        this.configurationService = new DefaultConfigurationService();
-      }
-    };
+    wikiService = new HttpClientWikiService(new DefaultConfigurationService());
     wikiService.postConstruct();
   }
 
