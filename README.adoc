@@ -53,7 +53,7 @@ DATA_FILE_URL="https://ci.jenkins.io/job/Infra/job/plugin-site-api/job/generate-
 This will launch an embedded Jetty container accessible at `http://localhost:8080`.
 `DATA_FILE_URL` can point to `http`/`https` URLS or to local files using the `file://${path}` syntax.
 
-If `GITHUB_APP_ID` and `GITHUB_APP_PRIVATE_KEY` it will try to use a personal access token provided by `GITHUB_TOKEN` and failing that, your site will be limited to fetching 60 plugin documentation pages per hour.
+If `GITHUB_APP_ID` and `GITHUB_APP_PRIVATE_KEY` are not set it will try to use a personal access token provided by `GITHUB_TOKEN` and failing that, your site will be limited to fetching 60 plugin documentation pages per hour.
 
 == Run in production mode
 
