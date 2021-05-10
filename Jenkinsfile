@@ -40,7 +40,7 @@ node('docker&&linux') {
              * the nginx container for accessing the DATA_FILE_URL
              */
             stage('Build') {
-                docker.image('maven').inside("--link ${c.id}:nginx") {
+                docker.image('maven:3-adoptopenjdk-11').inside("--link ${c.id}:nginx") {
                     withEnv([
                         'DATA_FILE_URL=http://nginx/plugins.json.gzip',
                     ]) {
